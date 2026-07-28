@@ -14,11 +14,11 @@ const { title, description, pubDate, updatedDate, heroImage, collection, tags = 
 <SiteLayout title={title} description={description} image={heroImage} type="article">
   <article class="post-article">
     <header class="post-header">
-      <nav aria-label="面包屑"><a href={withBase("/blog/")}>文章</a>{collection && <span>/</span>}{collection && <a href={withBase(collectionPath(collection))}>{collection}</a>}</nav>
+      <nav aria-label="面包屑"><ol><li><a href={withBase("/blog/")}>文章</a></li>{collection && <li><a href={withBase(collectionPath(collection))}>{collection}</a></li>}</ol></nav>
       <h1>{title}</h1>
       <p class="description">{description}</p>
-      <div class="meta"><span>发布于 <FormattedDate date={pubDate} /></span>{updatedDate && <span>更新于 <FormattedDate date={updatedDate} /></span>}<span>约 {estimateReadingMinutes(body)} 分钟</span></div>
-      {tags.length > 0 && <div class="tags">{tags.map((tag) => <a href={withBase(tagPath(tag))}>#{tag}</a>)}</div>}
+      <dl class="meta"><div><dt>发布于</dt><dd><FormattedDate date={pubDate} /></dd></div>{updatedDate && <div><dt>更新于</dt><dd><FormattedDate date={updatedDate} /></dd></div>}<div><dt>阅读时间</dt><dd>约 {estimateReadingMinutes(body)} 分钟</dd></div></dl>
+      {tags.length > 0 && <ul class="tags" aria-label="文章标签">{tags.map((tag) => <li><a href={withBase(tagPath(tag))}>#{tag}</a></li>)}</ul>}
     </header>
     {heroImage && <div class="hero-image"><Image width={840} height={420} src={heroImage} alt={title} /></div>}
     <div class="prose content-prose"><slot />{enableComments && <CommentSection />}</div>
@@ -27,8 +27,8 @@ const { title, description, pubDate, updatedDate, heroImage, collection, tags = 
 <style>
   .post-header,.prose { width:var(--reading-max-width); max-width:100%; margin-right:auto; margin-left:auto; }
   .post-header { margin-bottom:1.4rem; }
-  nav { display:flex; margin-bottom:.55rem; gap:.4rem; color:var(--text-muted); font-size:var(--text-xs); } nav a { color:var(--text-muted); text-decoration:none; }
+  nav { margin-bottom:.55rem; color:var(--text-muted); font-size:var(--text-xs); } nav ol { display:flex; margin:0; padding:0; list-style:none; } nav li + li::before { margin:0 .4rem; content:"/"; } nav a { color:var(--text-muted); text-decoration:none; }
   h1 { min-width:0; margin:0; font-size:var(--text-3xl); line-height:var(--line-height-tight); letter-spacing:0; overflow-wrap:anywhere; }
-  .description { margin:.45rem 0 0; color:var(--text-secondary); font-size:var(--text-sm); } .meta,.tags { display:flex; margin-top:.55rem; flex-wrap:wrap; gap:.35rem .8rem; color:var(--text-muted); font-size:var(--text-xs); } .tags { margin-top:.35rem; } .tags a { text-decoration:none; }
+  .description { margin:.45rem 0 0; color:var(--text-secondary); font-size:var(--text-sm); } .meta,.tags { display:flex; margin:.55rem 0 0; padding:0; flex-wrap:wrap; gap:.35rem .8rem; color:var(--text-muted); font-size:var(--text-xs); } .meta > div { display:flex; gap:.25rem; } .meta dt,.meta dd { margin:0; } .tags { margin-top:.35rem; list-style:none; } .tags a { text-decoration:none; }
   .hero-image { margin-bottom:1.4rem; } .hero-image img { width:100%; }
 </style>

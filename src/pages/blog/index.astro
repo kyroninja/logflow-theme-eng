@@ -16,8 +16,8 @@ const collections=Array.from(collectionMap.entries()).sort((a,b)=>b[1].count-a[1
 ---
 <SiteLayout title={`${PAGE_COPY.blog.title} | ${SITE_TITLE}`} description={PAGE_COPY.blog.description}>
   <PageHeader title={PAGE_COPY.blog.title} description={PAGE_COPY.blog.description} descriptionItalic={PAGE_COPY.blog.descriptionItalic} meta={`${posts.length} 篇`}><ArchiveLink slot="description-action" /></PageHeader>
-  <div class="blog-layout"><section><PostList posts={posts} showReadingTime={true}/></section><aside class="blog-sidebar">
+  <div class="blog-layout"><div><PostList posts={posts} showReadingTime={true}/></div><aside class="blog-sidebar">
     <SidebarSection title="专题" href={withBase("/blog/collections/")}><ul class="sidebar-section-list">{collections.map(([name,meta])=><li><a href={withBase(collectionPath(name))}>{name}<small>{meta.count} 篇</small></a></li>)}</ul></SidebarSection>
-    <SidebarSection title="标签" href={withBase("/blog/tags/")}><div class="sidebar-tags">{tags.map(([tag,count])=><a href={withBase(tagPath(tag))}>{tag} <small>{count}</small></a>)}</div></SidebarSection>
+    <SidebarSection title="标签" href={withBase("/blog/tags/")}><ul class="sidebar-tags">{tags.map(([tag,count])=><li><a href={withBase(tagPath(tag))}>{tag} <small>{count}</small></a></li>)}</ul></SidebarSection>
   </aside></div>
 </SiteLayout>

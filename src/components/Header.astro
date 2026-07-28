@@ -8,10 +8,10 @@ import ThemeToggle from "./ThemeToggle.astro";
 const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname, link.href))?.label ?? "首页";
 ---
 <header class="site-header"><div class="header-inner">
-  <div class="brand-lockup"><a class="brand" href={withBase("/")}>{SITE_TITLE}</a><span aria-hidden="true">/</span><span class="current-section">{currentSection}</span></div>
-  <nav class="desktop-nav" aria-label="主导航">{NAV_LINKS.map((link,index) => <HeaderLink href={link.href}><span class="nav-index">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink>)}</nav>
+  <p class="brand-lockup"><a class="brand" href={withBase("/")}>{SITE_TITLE}</a><span aria-hidden="true">/</span><span class="current-section">{currentSection}</span></p>
+  <nav class="desktop-nav" aria-label="主导航"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href}><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
   <div class="actions">{SEARCH.enabled && <SearchDialog />}<ThemeToggle /><button id="menu-toggle" class="menu-toggle" type="button" aria-label="展开导航" aria-controls="mobile-nav" aria-expanded="false"><svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
-  <nav id="mobile-nav" class="mobile-nav" aria-label="移动端导航" aria-hidden="true">{NAV_LINKS.map((link,index) => <HeaderLink href={link.href} tabindex="-1"><span class="nav-index">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink>)}</nav>
+  <nav id="mobile-nav" class="mobile-nav" aria-label="移动端导航" aria-hidden="true"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href} tabindex="-1"><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
 </div></header>
 <script>
   const menuToggle = document.getElementById("menu-toggle"); const mobileNav = document.getElementById("mobile-nav");
@@ -27,12 +27,14 @@ const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname
 <style>
   .site-header { --header-icon-size:1.125rem; --header-icon-stroke:2; position:sticky; top:0; z-index:100; background:var(--background-header); -webkit-backdrop-filter:saturate(150%) blur(12px); backdrop-filter:saturate(150%) blur(12px); }
   .header-inner { display:grid; grid-template-columns:auto minmax(0,1fr) auto; width:var(--page-max-width); max-width:calc(100% - 2rem); min-height:3.5rem; margin:0 auto; align-items:center; gap:.75rem; }
-  .brand-lockup { display:flex; min-width:0; align-items:baseline; gap:.4rem; white-space:nowrap; }
+  .brand-lockup { display:flex; min-width:0; margin:0; align-items:baseline; gap:.4rem; white-space:nowrap; }
   .brand { padding:.4rem 0; color:var(--text-primary); font-size:var(--text-lg); font-weight:var(--weight-bold); line-height:var(--line-height-compact); text-decoration:none; white-space:nowrap; transition:color .16s ease; }
   .brand:hover { color:var(--accent); }
   .brand-lockup > span { color:var(--text-muted); font-size:var(--text-xs); line-height:var(--line-height-compact); }
   .current-section { overflow:hidden; width:3em; text-overflow:ellipsis; }
-  .desktop-nav { display:flex; justify-content:flex-end; gap:.25rem; }
+  .desktop-nav ul,.mobile-nav ul { margin:0; padding:0; list-style:none; }
+  .desktop-nav ul { display:flex; justify-content:flex-end; gap:.25rem; }
+  .desktop-nav li,.mobile-nav li { min-width:0; }
   .desktop-nav :global(a),.mobile-nav :global(a) { position:relative; flex:0 0 auto; padding:.45rem .55rem; border-radius:var(--radius-ui); color:var(--text-secondary); font-size:var(--text-md); line-height:var(--line-height-compact); white-space:nowrap; transition:background-color .16s ease,color .16s ease; }
   .desktop-nav :global(a:hover),.mobile-nav :global(a:hover) { background:var(--background-elevated); }
   .desktop-nav :global(a.active),.mobile-nav :global(a.active) { color:var(--accent); }
@@ -44,5 +46,5 @@ const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname
   .menu-toggle:hover,.menu-toggle[aria-expanded="true"] { background:var(--background-elevated); color:var(--accent); }
   .menu-toggle svg { width:var(--header-icon-size); height:var(--header-icon-size); fill:none; stroke:currentColor; stroke-width:var(--header-icon-stroke); stroke-linecap:round; stroke-linejoin:round; }
   .close-icon,.mobile-nav { display:none; } .menu-toggle[aria-expanded="true"] .menu-icon { display:none; } .menu-toggle[aria-expanded="true"] .close-icon { display:block; }
-  @media (max-width:760px) { .header-inner { grid-template-columns:minmax(0,1fr) auto; grid-template-rows:3.5rem; max-width:calc(100% - 1.5rem); min-height:0; gap:0 .5rem; } .desktop-nav { display:none; } .menu-toggle { display:grid; } .mobile-nav { display:grid; grid-column:1/-1; grid-row:2; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.25rem; max-height:0; padding:0; overflow:hidden; opacity:0; pointer-events:none; transform:translateY(-4px); visibility:hidden; transition:max-height .16s ease,opacity .16s ease,transform .16s ease,visibility 0s linear .16s; } .mobile-nav.is-open { max-height:8rem; padding:.2rem 0 .7rem; opacity:1; pointer-events:auto; transform:translateY(0); visibility:visible; transition-delay:0s; } .mobile-nav :global(a) { text-align:left; } }
+  @media (max-width:760px) { .header-inner { grid-template-columns:minmax(0,1fr) auto; grid-template-rows:3.5rem; max-width:calc(100% - 1.5rem); min-height:0; gap:0 .5rem; } .desktop-nav { display:none; } .menu-toggle { display:grid; } .mobile-nav { display:block; grid-column:1/-1; grid-row:2; max-height:0; padding:0; overflow:hidden; opacity:0; pointer-events:none; transform:translateY(-4px); visibility:hidden; transition:max-height .16s ease,opacity .16s ease,transform .16s ease,visibility 0s linear .16s; } .mobile-nav ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.25rem; } .mobile-nav.is-open { max-height:8rem; padding:.2rem 0 .7rem; opacity:1; pointer-events:auto; transform:translateY(0); visibility:visible; transition-delay:0s; } .mobile-nav :global(a) { display:block; width:100%; text-align:left; } }
 </style>
