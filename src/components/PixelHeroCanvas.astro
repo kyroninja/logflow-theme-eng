@@ -1,0 +1,301 @@
+<canvas id="pixel-hero-canvas" class="pixel-hero-canvas" aria-hidden="true" transition:persist="pixel-hero"></canvas>
+
+<script>
+  // 全站像素流体动画（双 pass 合并为单 shader 的零依赖实现，亮暗主题跟随站点配色）
+  // 原理：Perlin FBM 域扭曲流体场 → 圆点阵栅格化 → 沿纵向偏置流向漂移采样
+  //       → 亮度阈值判定亮点 → 按稳定随机数主色/辅色着色 → 鼠标靠近主辅色互换
+
+  const canvas = document.getElementById("pixel-hero-canvas") as HTMLCanvasElement | null;
+
+  // 可调参数（源自 trae.ai 原 uniforms 的等效值，单位为逻辑像素 / UV）
+  const CELL_SIZE = 5;
+  const CELL_GAP = 2;
+  const DOT_RADIUS = 2.5;     // 圆点半径(逻辑像素)，CELL 内居中，边缘为完全硬边
+  const THRESHOLD = 0.72;      // 亮块亮度阈值（原版 0.87±0.08 等效经验值）
+  const THRESHOLD_JITTER = 0.08;
+  const GREEN_RATIO = 0.49;    // 主色块占比
+  const DENSITY = 1.5;         // 流体噪声密度
+  const FREQUENCY = 2.5;       // 域扭曲强度
+  const FLOW_GAIN = 35;        // 漂移位移增益(px)
+  const MOUSE_RADIUS = 100;    // 鼠标影响半径(逻辑像素，屏幕上的圆形范围)
+  const MOUSE_STRENGTH = 1.3;
+  const TIME_SCALE = 0.85;     // 时间流速
+  const DPR_CAP = 1.25;
+
+  function hexToRgb(hex: string): [number, number, number] {
+    let v = hex.trim().replace("#", "");
+    if (v.length === 3) v = v.split("").map((c) => c + c).join("");
+    return [
+      parseInt(v.slice(0, 2), 16) / 255,
+      parseInt(v.slice(2, 4), 16) / 255,
+      parseInt(v.slice(4, 6), 16) / 255,
+    ];
+  }
+
+  const VERTEX_SRC = `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+`;
+
+  const FRAGMENT_SRC = `
+precision highp float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform vec2 uMouse;
+uniform vec3 uAccent;
+uniform vec3 uGray;
+uniform vec3 uBg;
+uniform float uDpr;
+
+float random(vec2 st) {
+  return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+}
+vec2 hash(vec2 p) {
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+float noise(vec2 p) {
+  const float K1 = 0.366025404;
+  const float K2 = 0.211324865;
+  vec2 i = floor(p + (p.x + p.y) * K1);
+  vec2 a = p - i + (i.x + i.y) * K2;
+  vec2 o = (a.x > a.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec2 b = a - o + K2;
+  vec2 c = a - 1.0 + 2.0 * K2;
+  vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
+  vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+  return dot(n, vec3(70.0));
+}
+float fbm(vec2 p) {
+  float value = 0.0;
+  float amplitude = 0.5;
+  float frequency = 1.0;
+  for (int i = 0; i < 3; i++) {
+    value += amplitude * noise(p * frequency);
+    frequency *= 2.0;
+    amplitude *= 0.5;
+  }
+  return value * 0.5 + 0.5;
+}
+vec2 fluidQ(vec2 uv) {
+  return vec2(
+    fbm(uv * ${DENSITY} + vec2(0.0, 0.03 * uTime)),
+    fbm(uv * ${DENSITY} + vec2(1.2, -0.045 * uTime))
+  );
+}
+float fluidNoise(vec2 uv) {
+  return fbm(uv * ${DENSITY} + fluidQ(uv) * ${FREQUENCY});
+}
+
+void main() {
+  vec2 coord = gl_FragCoord.xy / uDpr;
+  float totalSize = ${(CELL_SIZE + CELL_GAP).toFixed(1)};
+  vec2 cellId = floor(coord / totalSize);
+  vec2 posInCell = coord - cellId * totalSize;
+
+  float rand = random(cellId);
+  vec2 cellCenterUV = (cellId * totalSize + vec2(${((CELL_SIZE + CELL_GAP) / 2).toFixed(1)})) / uRes;
+
+  // 与 PixelationShader 一致：按点中心求流向并做纵向偏置
+  vec2 q = fluidQ(cellCenterUV);
+  vec2 flowPx = vec2(q.x * 0.15, q.y * 2.1) * ${FLOW_GAIN.toFixed(1)};
+  vec2 sampledUv = cellCenterUV - flowPx / uRes;
+
+  float brightness = fluidNoise(sampledUv);
+
+  // 鼠标交互：影响范围内的圆点主辅色互换（按屏幕像素距离计算，与窗口尺寸无关）
+  float dist = distance(cellCenterUV * uRes, uMouse * uRes);
+  float mouseFactor = clamp((1.0 - smoothstep(0.0, ${MOUSE_RADIUS.toFixed(1)}, dist)) * ${MOUSE_STRENGTH}, 0.0, 1.0);
+
+  // 圆点覆盖率（完全硬边），底色由主题变量 uBg 提供
+  float dCenter = length(posInCell - vec2(totalSize * 0.5));
+  float dotAlpha = step(dCenter, ${DOT_RADIUS.toFixed(2)});
+
+  if (dotAlpha > 0.0 && brightness > ${THRESHOLD} - ${THRESHOLD_JITTER} * rand) {
+    bool accentDot = rand < ${GREEN_RATIO};
+    vec3 color = accentDot ? uAccent : uGray;
+    vec3 other = accentDot ? uGray : uAccent;
+    gl_FragColor = vec4(mix(color, other, mouseFactor) * dotAlpha, 1.0);
+  } else {
+    gl_FragColor = vec4(uBg, 1.0);
+  }
+}
+`;
+
+  // 跨页面动画续接：动画时间存入 sessionStorage（按标签页隔离），
+  // 导航时旧页在 pagehide/隐藏时写入，新页初始化时读取，图案无缝衔接
+  const TIME_STORAGE_KEY = "pixel-hero-time";
+  const readStoredTime = () => {
+    try {
+      const value = Number(sessionStorage.getItem(TIME_STORAGE_KEY));
+      return Number.isFinite(value) && value >= 0 ? value : 0;
+    } catch {
+      return 0;
+    }
+  };
+  const persistTime = (value: number) => {
+    try {
+      sessionStorage.setItem(TIME_STORAGE_KEY, String(Math.round(value * 100) / 100));
+    } catch {}
+  };
+
+  function initHero() {
+    try {
+    if (!canvas) return;
+    const gl = canvas.getContext("webgl", {
+      antialias: false,
+      alpha: false,
+      depth: false,
+      stencil: false,
+      powerPreference: "high-performance",
+    });
+    if (!gl) {
+      console.warn("[pixel-hero] WebGL 不可用");
+      return;
+    }
+
+    const compile = (type: number, src: string) => {
+      const shader = gl.createShader(type)!;
+      gl.shaderSource(shader, src);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("pixel-hero shader:", gl.getShaderInfoLog(shader));
+      }
+      return shader;
+    };
+
+    const program = gl.createProgram()!;
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX_SRC));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAGMENT_SRC));
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error("pixel-hero program:", gl.getProgramInfoLog(program));
+      return;
+    }
+    gl.useProgram(program);
+
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(program, "aPos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes = gl.getUniformLocation(program, "uRes");
+    const uTime = gl.getUniformLocation(program, "uTime");
+    const uMouse = gl.getUniformLocation(program, "uMouse");
+    const uAccent = gl.getUniformLocation(program, "uAccent");
+    const uGray = gl.getUniformLocation(program, "uGray");
+    const uBg = gl.getUniformLocation(program, "uBg");
+    const uDpr = gl.getUniformLocation(program, "uDpr");
+
+    let dpr = 1;
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+      const w = Math.max(1, Math.floor(window.innerWidth));
+      const h = Math.max(1, Math.floor(window.innerHeight));
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uRes, w, h);
+      gl.uniform1f(uDpr, dpr);
+    };
+    resize();
+
+    const applyThemeColors = () => {
+      const rootStyle = getComputedStyle(document.documentElement);
+      const readVar = (name: string, fallback: string) => rootStyle.getPropertyValue(name).trim() || fallback;
+      gl.uniform3fv(uAccent, hexToRgb(readVar("--accent", "#39d353")));
+      gl.uniform3fv(uGray, hexToRgb(readVar("--text-muted", "#8b949e")));
+      gl.uniform3fv(uBg, hexToRgb(readVar("--pixel-hero-bg", "#ffffff")));
+    };
+    applyThemeColors();
+    void document.fonts?.ready.then(applyThemeColors);
+
+    let mouseUv: [number, number] = [0.5, 0.5];
+    window.addEventListener(
+      "mousemove",
+      (event) => {
+        mouseUv = [event.clientX / window.innerWidth, 1 - event.clientY / window.innerHeight];
+      },
+      { passive: true },
+    );
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let timeAcc = reducedMotion ? 40 : readStoredTime();
+    let lastFrame = performance.now();
+    let rafId = 0;
+
+    const renderFrame = () => {
+      gl!.uniform1f(uTime, timeAcc);
+      gl!.uniform2f(uMouse!, mouseUv[0], mouseUv[1]);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+    };
+
+    const runningState = { pageVisible: !document.hidden, contextLost: false };
+    const updateLoop = () => {
+      const shouldRun = runningState.pageVisible && !runningState.contextLost && !reducedMotion;
+      if (shouldRun && !rafId) {
+        lastFrame = performance.now();
+        rafId = requestAnimationFrame(tick);
+      } else if (!shouldRun && rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    };
+
+    const tick = (now: number) => {
+      const dt = Math.min(now - lastFrame, 50);
+      lastFrame = now;
+      timeAcc += (dt / 1000) * TIME_SCALE;
+      renderFrame();
+      rafId = requestAnimationFrame(tick);
+    };
+
+    if (reducedMotion) renderFrame();
+
+    // 双主题常驻运行：监听主题类切换，仅同步配色
+    const syncTheme = () => {
+      applyThemeColors();
+      if (reducedMotion) renderFrame();
+    };
+    new MutationObserver(syncTheme).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) persistTime(timeAcc);
+      runningState.pageVisible = !document.hidden;
+      updateLoop();
+    });
+    window.addEventListener("pagehide", () => persistTime(timeAcc));
+
+    // 上下文丢失（GPU/驱动重置）时停止渲染，画布回退为纯色 CSS 底色，
+    // 与"WebGL 不可用"时的降级表现一致
+    canvas.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault();
+      runningState.contextLost = true;
+      updateLoop();
+    });
+
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        resize();
+        if (!rafId) renderFrame();
+      }, 120);
+    });
+
+    syncTheme();
+    updateLoop();
+    } catch (err) {
+      console.warn("[pixel-hero] 初始化失败:", err);
+    }
+  }
+
+  initHero();
+</script>
