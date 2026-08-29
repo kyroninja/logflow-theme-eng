@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # vscode setting folder
 .vscode/
+
+# local tool state
+.mimosa/
+.zcode/
