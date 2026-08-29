@@ -6,13 +6,27 @@
 
 > A compact, content-first Astro theme for blogs and personal sites.
 
-![主题总览](public/screenshots/overview.png)
+<table>
+  <tr>
+    <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="主题总览 · 深色首页" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="public/screenshots/article-dark.png" alt="文章页 · 深色" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub 活跃度 · 深色" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="public/screenshots/friends-dark.png" alt="友链页 · 深色" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/home-light.png" alt="首页 · 浅色" width="100%" /></td>
+  </tr>
+</table>
 
 ## 功能
 
 - Markdown/MDX、代码高亮、一键复制和可选文章头图
 - 专题、标签、年份归档、友链和 About 页面
 - 零依赖静态文章搜索，支持标题、摘要和标签
+- 全站像素流体动画背景：零依赖 WebGL 实现，跟随明暗主题配色，支持 reduced-motion 与 WebGL 不可用降级
+- ClientRouter 无缝换页与链接预加载，动画跨页持续播放
 - 明暗主题、响应式移动端导航和键盘焦点样式
 - RSS、sitemap、canonical、Open Graph 和 Twitter Card
 - 可选 Giscus 评论与 GitHub 活跃度组件

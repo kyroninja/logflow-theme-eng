@@ -6,13 +6,27 @@ A compact, content-first Astro blog theme for writing, personal sites, and techn
 
 > 一个简洁、内容优先的 Astro 博客主题，适合中文写作、个人主页和技术文档。
 
-![Theme Overview](public/screenshots/overview.png)
+<table>
+  <tr>
+    <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="Theme Overview · Dark Home" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="public/screenshots/article-dark.png" alt="Article · Dark" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub Activity · Dark" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="public/screenshots/friends-dark.png" alt="Friends · Dark" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/home-light.png" alt="Home · Light" width="100%" /></td>
+  </tr>
+</table>
 
 ## Features
 
 - Markdown / MDX, syntax highlighting, one-click code copy, and optional hero images
 - Collections, tags, year archives, friend links, and About page
 - Dependency-free static post search across titles, descriptions, and tags
+- Site-wide pixel fluid animation background: zero-dependency WebGL, follows the light/dark palette, with reduced-motion and no-WebGL fallbacks
+- ClientRouter seamless page transitions with link prefetch; the animation persists across pages
 - Light / dark theme, responsive mobile nav, and keyboard focus styles
 - RSS, sitemap, canonical, Open Graph, and Twitter Card
 - Optional Giscus comments and GitHub contribution graph
