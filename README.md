@@ -11,6 +11,9 @@
     <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="主题总览 · 深色首页" width="100%" /></td>
   </tr>
   <tr>
+    <td colspan="2" align="center"><img src="public/screenshots/pixel-hero.gif" alt="像素流体动画 · 深色" width="100%" /></td>
+  </tr>
+  <tr>
     <td align="center"><img src="public/screenshots/article-dark.png" alt="文章页 · 深色" width="100%" /></td>
     <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub 活跃度 · 深色" width="100%" /></td>
   </tr>

@@ -11,6 +11,9 @@ A compact, content-first Astro blog theme for writing, personal sites, and techn
     <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="Theme Overview · Dark Home" width="100%" /></td>
   </tr>
   <tr>
+    <td colspan="2" align="center"><img src="public/screenshots/pixel-hero.gif" alt="Pixel Fluid Animation · Dark" width="100%" /></td>
+  </tr>
+  <tr>
     <td align="center"><img src="public/screenshots/article-dark.png" alt="Article · Dark" width="100%" /></td>
     <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub Activity · Dark" width="100%" /></td>
   </tr>
