@@ -68,7 +68,7 @@ npm run preview
 | `COMMENTS` | Giscus 评论系统 | 否 |
 | `SEARCH` | 搜索开关和最大结果数 | 否 |
 
-友链位于 `src/config/friend-links.ts`，按 `FriendLink` 接口添加即可；未填写 `avatar` 时自动使用 favicon。
+友链位于 `src/config/friend-links.ts`，按 `FriendLink` 接口添加即可；未填写 `avatar` 时显示站点名称首字。
 
 颜色、字体、间距、宽度和圆角等设计令牌位于 `src/styles/global.css` 顶部的 CSS 变量中。
 

@@ -67,7 +67,7 @@ Most site information lives in `src/consts.ts`:
 | `COMMENTS` | Giscus comment system | No |
 | `SEARCH` | Search toggle and maximum result count | No |
 
-Friend links live in `src/config/friend-links.ts`. Add entries following the `FriendLink` interface; when `avatar` is omitted, the favicon is used as a fallback.
+Friend links live in `src/config/friend-links.ts`. Add entries following the `FriendLink` interface; when `avatar` is omitted, the first letter of the site name is shown instead.
 
 Design tokens (colors, fonts, spacing, widths, radii) are at the top of `src/styles/global.css` as CSS custom properties.
 
