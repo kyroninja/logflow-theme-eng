@@ -3,6 +3,7 @@
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
+import { ClientRouter } from 'astro:transitions';
 import { SITE_TITLE } from '../consts';
 import { withBase } from '../utils/withBase';
 
@@ -41,18 +42,18 @@ const { title, description, image, type = 'website' } = Astro.props;
 		}
 		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 	};
-	const isDark = getThemePreference() === 'dark';
-	document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-
-	if (typeof localStorage !== 'undefined') {
-		// Watch the document element and persist user preference when it changes.
-		const observer = new MutationObserver(() => {
-			const isDark = document.documentElement.classList.contains('dark');
-			localStorage.setItem('theme', isDark ? 'dark' : 'light');
-		});
-		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-	}
+	const applyTheme = () => {
+		const isDark = getThemePreference() === 'dark';
+		document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+	};
+	applyTheme();
+	// ClientRouter 换页会替换 <html> 属性（dark 类会丢失），换页完成后重新应用。
+	// 注意：不要监听 class 变化回写 localStorage——换页瞬间 dark 被移除会污染存储，
+	// 主题持久化只发生在 ThemeToggle 的用户点击里。
+	document.addEventListener('astro:after-swap', applyTheme);
 </script>
+
+<ClientRouter />
 
 <!-- Webfont -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />

@@ -4,34 +4,40 @@
     await navigator.clipboard.writeText(text);
   };
 
-  document.querySelectorAll<HTMLElement>(".content-prose pre, .exchange-section pre").forEach((pre) => {
-    if (pre.closest(".code-block")) return;
-    const code = pre.querySelector("code");
-    if (!code) return;
+  // ClientRouter 换页后文章 DOM 被替换，需在每次 page-load 重新处理代码块；
+  // 已包装过的 pre 会被 closest 守卫跳过，天然幂等
+  const initCodeCopy = () => {
+    document.querySelectorAll<HTMLElement>(".content-prose pre, .exchange-section pre").forEach((pre) => {
+      if (pre.closest(".code-block")) return;
+      const code = pre.querySelector("code");
+      if (!code) return;
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "code-block";
-    pre.before(wrapper);
-    wrapper.append(pre);
+      const wrapper = document.createElement("div");
+      wrapper.className = "code-block";
+      pre.before(wrapper);
+      wrapper.append(pre);
 
-    const button = document.createElement("button");
-    button.className = "code-copy-button";
-    button.type = "button";
-    button.textContent = "复制";
-    button.setAttribute("aria-label", "复制代码");
-    button.setAttribute("aria-live", "polite");
-    wrapper.append(button);
+      const button = document.createElement("button");
+      button.className = "code-copy-button";
+      button.type = "button";
+      button.textContent = "复制";
+      button.setAttribute("aria-label", "复制代码");
+      button.setAttribute("aria-live", "polite");
+      wrapper.append(button);
 
-    button.addEventListener("click", async () => {
-      try {
-        await copyText(code.textContent ?? "");
-        button.textContent = "已复制";
-        button.dataset.state = "success";
-      } catch {
-        button.textContent = "复制失败";
-        button.dataset.state = "error";
-      }
-      window.setTimeout(() => { button.textContent = "复制"; button.dataset.state = ""; }, 1600);
+      button.addEventListener("click", async () => {
+        try {
+          await copyText(code.textContent ?? "");
+          button.textContent = "已复制";
+          button.dataset.state = "success";
+        } catch {
+          button.textContent = "复制失败";
+          button.dataset.state = "error";
+        }
+        window.setTimeout(() => { button.textContent = "复制"; button.dataset.state = ""; }, 1600);
+      });
     });
-  });
+  };
+
+  document.addEventListener("astro:page-load", initCodeCopy);
 </script>

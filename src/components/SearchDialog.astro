@@ -80,7 +80,35 @@ const indexUrl = withBase("/search-index.json");
     }
   };
 
-  document.querySelectorAll<HTMLElement>("[data-search]").forEach((root) => {
+  // 搜索索引缓存保留在模块级，跨页复用；
+  // DOM 监听随换页重建，document 级监听通过 AbortController 清理旧实例
+  let items: PreparedSearchIndexItem[] | null = null;
+  let loadPromise: Promise<PreparedSearchIndexItem[]> | null = null;
+  let searchAbort: AbortController | null = null;
+
+  const loadIndex = (indexUrl: string) => {
+    if (items) return Promise.resolve(items);
+    if (!loadPromise) {
+      loadPromise = fetch(indexUrl)
+        .then((response) => {
+          if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
+          return response.json() as Promise<SearchIndexItem[]>;
+        })
+        .then((documents) => {
+          items = prepareSearchIndex(documents);
+          return items;
+        });
+    }
+    return loadPromise;
+  };
+
+  const initSearch = () => {
+    searchAbort?.abort();
+    searchAbort = new AbortController();
+    const signal = searchAbort.signal;
+
+    const root = document.querySelector<HTMLElement>("[data-search]");
+    if (!root) return;
     const trigger = root.querySelector<HTMLButtonElement>(".search-trigger");
     const dialog = root.querySelector<HTMLDialogElement>(".search-dialog");
     const closeButton = root.querySelector<HTMLButtonElement>(".search-close");
@@ -91,8 +119,6 @@ const indexUrl = withBase("/search-index.json");
     const maxResults = Number(root.dataset.maxResults) || 8;
     if (!trigger || !dialog || !closeButton || !input || !status || !results || !indexUrl) return;
 
-    let items: PreparedSearchIndexItem[] | null = null;
-    let loadPromise: Promise<PreparedSearchIndexItem[]> | null = null;
     let resizeAnimation: Animation | null = null;
     let activeIndex = -1;
 
@@ -105,22 +131,6 @@ const indexUrl = withBase("/search-index.json");
         [{ height: `${previousHeight}px` }, { height: `${nextHeight}px` }],
         { duration: 160, easing: "ease-out" },
       );
-    };
-
-    const loadIndex = () => {
-      if (items) return Promise.resolve(items);
-      if (!loadPromise) {
-        loadPromise = fetch(indexUrl)
-          .then((response) => {
-            if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
-            return response.json() as Promise<SearchIndexItem[]>;
-          })
-          .then((documents) => {
-            items = prepareSearchIndex(documents);
-            return items;
-          });
-      }
-      return loadPromise;
     };
 
     const setActiveResult = (index: number) => {
@@ -193,7 +203,7 @@ const indexUrl = withBase("/search-index.json");
       status.hidden = false;
       status.textContent = items ? "输入关键词搜索文章" : "正在加载搜索索引…";
       requestAnimationFrame(() => input.focus());
-      loadIndex()
+      loadIndex(indexUrl)
         .then(() => renderResults(input.value))
         .catch(() => {
           loadPromise = null;
@@ -203,17 +213,17 @@ const indexUrl = withBase("/search-index.json");
         });
     };
 
-    trigger.addEventListener("click", openSearch);
-    closeButton.addEventListener("click", () => dialog.close());
+    trigger.addEventListener("click", openSearch, { signal });
+    closeButton.addEventListener("click", () => dialog.close(), { signal });
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
-    });
+    }, { signal });
     dialog.addEventListener("close", () => {
       input.setAttribute("aria-expanded", "false");
       trigger.focus();
       activeIndex = -1;
-    });
-    input.addEventListener("input", () => renderResults(input.value));
+    }, { signal });
+    input.addEventListener("input", () => renderResults(input.value), { signal });
     input.addEventListener("keydown", (event) => {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -228,7 +238,7 @@ const indexUrl = withBase("/search-index.json");
           activeLink.click();
         }
       }
-    });
+    }, { signal });
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && dialog.open) {
@@ -245,8 +255,10 @@ const indexUrl = withBase("/search-index.json");
         event.preventDefault();
         openSearch();
       }
-    });
-  });
+    }, { signal });
+  };
+
+  document.addEventListener("astro:page-load", initSearch);
 </script>
 
 <style>
@@ -254,10 +266,10 @@ const indexUrl = withBase("/search-index.json");
   .search-trigger,.search-close { display:grid; width:2.25rem; height:2.25rem; padding:0; place-items:center; border:0; border-radius:var(--radius-ui); background:transparent; color:var(--text-secondary); cursor:pointer; transition:background-color .16s ease,color .16s ease; }
   .search-trigger:hover,.search-close:hover { background:var(--background-elevated); color:var(--accent); }
   .search-trigger svg,.search-close svg,.search-input-icon { width:1.125rem; height:1.125rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .search-dialog { --search-dialog-top:clamp(2rem,10dvh,6rem); --search-dialog-bottom:1rem; --search-dialog-max-height:min(38rem,calc(100dvh - var(--search-dialog-top) - var(--search-dialog-bottom))); inset-block:var(--search-dialog-top) auto; width:min(38rem,calc(100% - 2rem)); max-height:var(--search-dialog-max-height); margin-block:0; margin-inline:auto; padding:0; overflow:hidden; border:0; border-radius:var(--radius-ui); background:var(--background-elevated); color:var(--text-secondary); box-shadow:0 18px 60px rgba(0,0,0,.2); }
+  .search-dialog { --search-dialog-top:clamp(2rem,10dvh,6rem); --search-dialog-bottom:1rem; --search-dialog-max-height:min(38rem,calc(100dvh - var(--search-dialog-top) - var(--search-dialog-bottom))); inset-block:var(--search-dialog-top) auto; width:min(38rem,calc(100% - 2rem)); max-height:var(--search-dialog-max-height); margin-block:0; margin-inline:auto; padding:0; overflow:hidden; border:0; border-radius:var(--radius-ui); background:var(--background-header); -webkit-backdrop-filter:saturate(150%) blur(12px); backdrop-filter:saturate(150%) blur(12px); color:var(--text-secondary); box-shadow:0 18px 60px rgba(0,0,0,.2); }
   .search-dialog::backdrop { background:rgba(15,18,20,.5); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
   .search-panel { display:grid; max-height:var(--search-dialog-max-height); grid-template-rows:auto minmax(8rem,1fr) auto; }
-  .search-head { display:grid; grid-template-columns:auto minmax(0,1fr) auto; padding:.65rem; align-items:center; gap:.5rem; background:var(--background-elevated); }
+  .search-head { display:grid; grid-template-columns:auto minmax(0,1fr) auto; padding:.65rem; align-items:center; gap:.5rem; }
   .search-input-icon { color:var(--text-muted); }
   .search-input { width:100%; min-width:0; padding:.4rem .6rem; border:0; border-radius:var(--radius-ui); outline:0; background:var(--background-body); color:var(--text-primary); font-size:var(--text-md); }
   .search-input::placeholder { color:var(--text-muted); }

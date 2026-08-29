@@ -10,6 +10,7 @@ export default defineConfig({
 	site: process.env.SITE_URL ?? SITE_URL,
 	base: process.env.BASE_PATH ?? '/',
 	integrations: [mdx(), sitemap()],
+	prefetch: true,
 	markdown: {
 		shikiConfig: {
 			themes: {

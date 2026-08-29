@@ -28,7 +28,8 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 			<h2>评论</h2>
 			{
 				isConfigured ? (
-					<script is:inline>
+					<script is:inline data-astro-rerun>
+						// data-astro-rerun：ClientRouter 换页后重新执行，为当前文章重新挂载 giscus
 						const commentsContainer = document.querySelector('.comments[data-giscus="true"]');
 						if (commentsContainer) {
 							const repo = commentsContainer.getAttribute('data-repo') || '';
@@ -83,10 +84,13 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 								}
 							}, 300);
 
+							// data-astro-rerun 每次换页重跑本脚本，先断开上一个 observer 避免累积
+							if (window.__giscusThemeObserver) window.__giscusThemeObserver.disconnect();
 							const observer = new MutationObserver(() => {
 								setGiscusTheme();
 							});
 							observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+							window.__giscusThemeObserver = observer;
 						}
 					</script>
 				) : (
