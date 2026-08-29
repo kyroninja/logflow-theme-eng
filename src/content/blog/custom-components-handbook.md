@@ -17,6 +17,8 @@ tags:
 **功能**
 
 - 注入页面基础 SEO 信息、OG/Twitter 元信息、RSS 链接与主题初始化脚本。
+- 引入 `ClientRouter` 实现无缝换页，并在 `astro:after-swap` 后重新应用持久化的主题。
+- 加载 LXGW 霞鹜文楷屏幕阅读版网络字体。
 
 **使用方法**
 
@@ -34,11 +36,36 @@ tags:
 - `image?: ImageMetadata`：可选，提供后会输出 `og:image` 与 `twitter:image`。
 - `type?: 'website' | 'article'`：可选，文章页传入 `article`。
 
+## PixelHeroCanvas.astro
+
+**功能**
+
+- 全站像素流体动画背景：零依赖 WebGL 两遍渲染（流体场计算 + 圆点栅格化），配色跟随站点的 `--accent`、`--text-muted` 与 `--pixel-hero-bg` 变量，明暗主题切换时实时同步。
+- 通过 `transition:persist` 跨页持续播放，换页不中断；鼠标靠近时主辅色互换。
+- 遵循 `prefers-reduced-motion`（静态呈现），WebGL 不可用或上下文丢失时降级为纯色背景。
+
+**使用方法**
+
+```astro
+<PixelHeroCanvas />
+```
+
+由 `SiteLayout.astro` 挂载在 `<body>` 顶部，无需手动调用。
+
+**consts.ts 如何设置**
+
+- 无直接关联项；背景色与不透明度通过 `global.css` 中的 `--pixel-hero-bg`、`--pixel-hero-opacity` 调整。
+
+**可选参数**
+
+- 无组件参数。
+
 ## Header.astro
 
 **功能**
 
-- 渲染顶部站点标题、`NAV_LINKS` 导航、主题切换和移动端菜单。
+- 渲染顶部站点标题、`NAV_LINKS` 导航、搜索入口、主题切换和移动端菜单。
+- 换页后在 `astro:page-load` 中重新绑定交互，document 级监听会自动清理。
 
 **使用方法**
 
@@ -48,7 +75,7 @@ tags:
 
 **consts.ts 如何设置**
 
-- 关联项：`SITE_TITLE`、`NAV_LINKS`
+- 关联项：`SITE_TITLE`、`NAV_LINKS`、`SEARCH`
 - 社交链接由 `Footer.astro` 使用 `SOCIAL_LINKS` 渲染。
 
 **可选参数**
@@ -80,6 +107,7 @@ tags:
 **功能**
 
 - 切换深色/浅色模式并同步到文档根节点 class。
+- 点击时把偏好写入 `localStorage`（键 `theme`），并在换页后重新同步按钮状态。
 
 **使用方法**
 
@@ -94,6 +122,32 @@ tags:
 **可选参数**
 
 - 无组件参数。
+
+## SearchDialog.astro
+
+**功能**
+
+- Header 内的静态搜索弹窗：`<dialog>` 实现，毛玻璃背景与 Header 一致，支持 `Ctrl/Command + K` 与 `/` 快捷键、`↑`/`↓` 选择、`Enter` 打开。
+- 首次打开时按需加载 `search-index.json`，索引缓存在模块级跨页复用；换页后在 `astro:page-load` 中重新绑定。
+
+**使用方法**
+
+```astro
+<SearchDialog />
+```
+
+由 `Header.astro` 按 `SEARCH.enabled` 条件渲染。
+
+**consts.ts 如何设置**
+
+- 关联项：`SEARCH`
+- 字段说明：
+  - `enabled`：是否在 Header 显示搜索入口。
+  - `maxResults`：最多展示的结果数。
+
+**可选参数**
+
+- 无组件参数，全部通过 `SEARCH` 控制。
 
 ## SocialIcon.astro
 
@@ -166,6 +220,18 @@ tags:
 ## ContentSection.astro 与 PageContainer.astro
 
 这两个布局组件提供统一的窄版页面容器和区块间距。页面组件应优先组合它们，而不是重复定义宽度、内边距和垂直间距。
+
+## SidebarSection.astro
+
+**功能**
+
+- 侧栏区块容器，与 `ContentSection.astro` 搭配组成双栏布局（如文章页的专题、标签侧栏）。
+
+## ArchiveLink.astro
+
+**功能**
+
+- 渲染“时间机器 →”归档入口链接，指向年份归档页，用于首页与文章列表页的区块头部。
 
 ## CodeCopy.astro
 

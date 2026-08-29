@@ -1,6 +1,6 @@
 ---
 title: consts.ts 配置参考
-description: 按站点、页面、导航、首页、友链与评论分组说明全局配置。
+description: 按站点、页面、导航、首页、搜索、友链与评论分组说明全局配置。
 pubDate: 2026-03-14
 collection: LogFlow Theme
 collectionDescription: LogFlow Theme 主题设计、实现与迭代实践
@@ -182,6 +182,20 @@ export const FRIEND_LINKS = [
 - `link`：站点地址；旧数据中的 `url` 仍兼容。
 - `avatar`：头像地址，可选；缺失时显示站点名称首字。
 - `desc`：一句话简介；旧数据中的 `description` 仍兼容。
+
+## 搜索
+
+`SEARCH` 控制静态文章搜索的入口与结果数量。
+
+```ts
+export const SEARCH = {
+  enabled: true,
+  maxResults: 8,
+} as const;
+```
+
+- `enabled`：设为 `false` 后 Header 不渲染搜索入口。
+- `maxResults`：搜索结果最多展示条数。
 
 ## 评论
 

@@ -15,6 +15,9 @@ tags:
 
 - 首页的个人信息、紧凑文章列表和 GitHub 活跃度。
 - 构建阶段获取数据并静态渲染的 GitHub 贡献图。
+- 全站像素流体动画背景（零依赖 WebGL），明暗主题跟随。
+- ClientRouter 无缝换页与链接预加载。
+- 零依赖的静态文章搜索。
 - 可以自定义的社交链接、友链列表。
 - 专题、标签和年份归档页面。
 - giscus 评论支持。
@@ -44,7 +47,7 @@ tags:
 使用了尽量简单的 Frontmatter 字段，包括：
 
 - `title`、`description`、`pubDate` 为必填
-- `updatedDate`、`collection`、`collectionDescription`、`tags` 为可选
+- `updatedDate`、`collection`、`collectionDescription`、`tags`、`heroImage`、`enableComments` 为可选
 
 好处显而易见，一方面可以专注于写作，另一方面如若久别重逢，也可快速上手。
 
