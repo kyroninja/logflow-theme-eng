@@ -29,3 +29,6 @@ pnpm-debug.log*
 # local tool state
 .mimosa/
 .zcode/
+
+# astro theme submission assets (exported locally)
+astro-theme-images/
