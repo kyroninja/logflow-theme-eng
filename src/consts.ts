@@ -86,12 +86,12 @@ export { FRIEND_LINKS } from "./config/friend-links";
 
 // Comment system config; the current provider is giscus.
 export const COMMENTS = {
-  enabled: false,
+  enabled: true,
   provider: "giscus",
-  repo: "owner/repository",
-  repoId: "",
+  repo: "kyroninja/blog-comments",
+  repoId: "R_kgDOUyFWGQ",
   category: "Announcements",
-  categoryId: "",
+  categoryId: "DIC_kwDOUyFWGc4DGo62",
   mapping: "pathname",
   themeLight: "light_protanopia",
   themeDark: "transparent_dark",
