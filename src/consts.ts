@@ -61,7 +61,7 @@ export const HOME = {
     src: "/favicon.svg",
     alt: "LogFlow Theme avatar",
   },
-  motto: "Build in public.",
+  motto: "",
   description: "A narrow, compact Astro blog theme.",
   recentPostsLimit: 6,
 } as const;
