@@ -1,8 +1,8 @@
 // Basic site info: used by the Header, SEO, RSS, sitemap and footer.
-export const SITE_TITLE = "LogFlow Theme";
-export const SITE_DESCRIPTION = "A compact Astro theme for writing and publishing.";
-export const SITE_URL = "https://example.com";
-export const COPYRIGHT_NAME = "LogFlow Theme";
+export const SITE_TITLE = "Kyroninja's Blog";
+export const SITE_DESCRIPTION = "Musings of an ex-electrical engineer turned data engineer!";
+export const SITE_URL = "https://blog.kyro.ninja";
+export const COPYRIGHT_NAME = "Kyroninja;
 
 // Static page titles and descriptions: used for both the page header and the SEO description.
 export const PAGE_COPY = {
@@ -50,7 +50,7 @@ export const NAV_LINKS = [
 export const SOCIAL_LINKS = [
   {
     label: "GitHub",
-    href: "https://github.com/kevynf/logflow-theme",
+    href: "https://github.com/kyroninja/logflow-theme-eng",
     icon: "social/github",
   },
 ] as const;
