@@ -70,8 +70,8 @@ export const HOME = {
 export const GH_CONTRIBUTE = {
   title: "GitHub Activity",
   description: "Open-source contributions over the past year",
-  username: "kevynf",
-  profileUrl: "https://github.com/kevynf",
+  username: "kyroninja",
+  profileUrl: "https://github.com/kyroninja",
   errorMessage: "The GitHub contribution graph is temporarily unavailable.",
 } as const;
 
