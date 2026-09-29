@@ -2,7 +2,7 @@
 export const SITE_TITLE = "Kyroninja's Blog";
 export const SITE_DESCRIPTION = "Musings of an ex-electrical engineer turned data engineer!";
 export const SITE_URL = "https://blog.kyro.ninja";
-export const COPYRIGHT_NAME = "Kyroninja;
+export const COPYRIGHT_NAME = "Kyroninja";
 
 // Static page titles and descriptions: used for both the page header and the SEO description.
 export const PAGE_COPY = {
