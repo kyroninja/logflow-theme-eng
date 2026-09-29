@@ -1,324 +1,324 @@
 ---
-title: 自定义组件手册：功能、用法与 consts.ts 配置
-description: 逐个说明 LogFlow Theme 自定义组件的职责、调用方式、关联配置与可选参数。
+title: "Custom Components Handbook: Features, Usage and consts.ts Settings"
+description: Explains each custom LogFlow Theme component's responsibility, how to call it, related configuration and optional parameters.
 pubDate: 2026-03-14
 collection: LogFlow Theme
-collectionDescription: LogFlow Theme 主题设计、实现与迭代实践
+collectionDescription: Design, implementation and iteration notes for the LogFlow Theme
 tags:
   - Astro
   - Components
   - Template
 ---
 
-这篇文章用于快速了解主题内置组件，帮助你在不改动核心结构的前提下完成定制。
+This post gives a quick tour of the theme's built-in components, to help you customize the theme without changing its core structure.
 
 ## BaseHead.astro
 
-**功能**
+**Features**
 
-- 注入页面基础 SEO 信息、OG/Twitter 元信息、RSS 链接与主题初始化脚本。
-- 引入 `ClientRouter` 实现无缝换页，并在 `astro:after-swap` 后重新应用持久化的主题。
-- 加载 LXGW 霞鹜文楷屏幕阅读版网络字体。
+- Injects the basic page SEO info, OG/Twitter metadata, the RSS link and the theme initialization script.
+- Brings in `ClientRouter` for seamless page transitions and re-applies the persisted theme after `astro:after-swap`.
+- Loads the LXGW WenKai Screen web font.
 
-**使用方法**
+**Usage**
 
 ```astro
-<BaseHead title="文章标题" description="页面描述" image={heroImage} />
+<BaseHead title="Post title" description="Page description" image={heroImage} />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`SITE_TITLE`、`SITE_DESCRIPTION`、`SITE_URL`
-- 用途：作为页面标题、描述、canonical URL 和站点级 SEO 信息来源。
+- Related items: `SITE_TITLE`, `SITE_DESCRIPTION`, `SITE_URL`
+- Purpose: the source of the page title, description, canonical URL and site-level SEO info.
 
-**可选参数**
+**Optional parameters**
 
-- `image?: ImageMetadata`：可选，提供后会输出 `og:image` 与 `twitter:image`。
-- `type?: 'website' | 'article'`：可选，文章页传入 `article`。
+- `image?: ImageMetadata`: optional; when provided, `og:image` and `twitter:image` are emitted.
+- `type?: 'website' | 'article'`: optional; pass `article` on post pages.
 
 ## PixelHeroCanvas.astro
 
-**功能**
+**Features**
 
-- 全站像素流体动画背景：零依赖 WebGL 两遍渲染（流体场计算 + 圆点栅格化），配色跟随站点的 `--accent`、`--text-muted` 与 `--pixel-hero-bg` 变量，明暗主题切换时实时同步。
-- 通过 `transition:persist` 跨页持续播放，换页不中断；鼠标靠近时主辅色互换。
-- 遵循 `prefers-reduced-motion`（静态呈现），WebGL 不可用或上下文丢失时降级为纯色背景。
+- Site-wide pixel fluid animation background: zero-dependency two-pass WebGL rendering (fluid field computation + dot rasterization), with colors that follow the site's `--accent`, `--text-muted` and `--pixel-hero-bg` variables and sync in real time when the light/dark theme switches.
+- Keeps playing across pages via `transition:persist`, so navigation does not interrupt it; primary and secondary colors swap when the mouse gets close.
+- Respects `prefers-reduced-motion` (rendered statically) and degrades to a solid background when WebGL is unavailable or the context is lost.
 
-**使用方法**
+**Usage**
 
 ```astro
 <PixelHeroCanvas />
 ```
 
-由 `SiteLayout.astro` 挂载在 `<body>` 顶部，无需手动调用。
+It is mounted at the top of `<body>` by `SiteLayout.astro`, so you do not need to call it manually.
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 无直接关联项；背景色与不透明度通过 `global.css` 中的 `--pixel-hero-bg`、`--pixel-hero-opacity` 调整。
+- No directly related items; adjust the background color and opacity through `--pixel-hero-bg` and `--pixel-hero-opacity` in `global.css`.
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数。
+- No component parameters.
 
 ## Header.astro
 
-**功能**
+**Features**
 
-- 渲染顶部站点标题、`NAV_LINKS` 导航、搜索入口、主题切换和移动端菜单。
-- 换页后在 `astro:page-load` 中重新绑定交互，document 级监听会自动清理。
+- Renders the site title at the top, the `NAV_LINKS` navigation, the search entry, the theme toggle and the mobile menu.
+- Rebinds interactions in `astro:page-load` after navigation; document-level listeners are cleaned up automatically.
 
-**使用方法**
+**Usage**
 
 ```astro
 <Header />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`SITE_TITLE`、`NAV_LINKS`、`SEARCH`
-- 社交链接由 `Footer.astro` 使用 `SOCIAL_LINKS` 渲染。
+- Related items: `SITE_TITLE`, `NAV_LINKS`, `SEARCH`
+- Social links are rendered by `Footer.astro` using `SOCIAL_LINKS`.
 
-**可选参数**
+**Optional parameters**
 
-- 无显式组件参数，依赖 `consts.ts` 驱动。
+- No explicit component parameters; it is driven by `consts.ts`.
 
 ## HeaderLink.astro
 
-**功能**
+**Features**
 
-- 生成带“当前路径高亮”状态的导航链接。
+- Generates navigation links with a "current path highlight" state.
 
-**使用方法**
+**Usage**
 
 ```astro
-<HeaderLink href="/blog">文章</HeaderLink>
+<HeaderLink href="/blog">Posts</HeaderLink>
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 无直接关联项。
+- No directly related items.
 
-**可选参数**
+**Optional parameters**
 
-- 继承原生 `<a>` 属性，可传 `class`、`target` 等。
+- Inherits the native `<a>` attributes, so you can pass `class`, `target` and so on.
 
 ## ThemeToggle.astro
 
-**功能**
+**Features**
 
-- 切换深色/浅色模式并同步到文档根节点 class。
-- 点击时把偏好写入 `localStorage`（键 `theme`），并在换页后重新同步按钮状态。
+- Switches between dark and light mode and syncs it to the class on the document root.
+- Writes the preference to `localStorage` (key `theme`) on click, and re-syncs the button state after navigation.
 
-**使用方法**
+**Usage**
 
 ```astro
 <ThemeToggle />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 无直接关联项。
+- No directly related items.
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数。
+- No component parameters.
 
 ## SearchDialog.astro
 
-**功能**
+**Features**
 
-- Header 内的静态搜索弹窗：`<dialog>` 实现，毛玻璃背景与 Header 一致，支持 `Ctrl/Command + K` 与 `/` 快捷键、`↑`/`↓` 选择、`Enter` 打开。
-- 首次打开时按需加载 `search-index.json`，索引缓存在模块级跨页复用；换页后在 `astro:page-load` 中重新绑定。
+- The static search dialog in the Header: built on `<dialog>`, with a frosted-glass background matching the Header, supporting the `Ctrl/Command + K` and `/` shortcuts, `↑`/`↓` to select and `Enter` to open.
+- Loads `search-index.json` on demand the first time it is opened; the index is cached at module level and reused across pages, and rebound in `astro:page-load` after navigation.
 
-**使用方法**
+**Usage**
 
 ```astro
 <SearchDialog />
 ```
 
-由 `Header.astro` 按 `SEARCH.enabled` 条件渲染。
+It is rendered by `Header.astro` conditionally on `SEARCH.enabled`.
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`SEARCH`
-- 字段说明：
-  - `enabled`：是否在 Header 显示搜索入口。
-  - `maxResults`：最多展示的结果数。
+- Related item: `SEARCH`
+- Field descriptions:
+  - `enabled`: whether to show the search entry in the Header.
+  - `maxResults`: the maximum number of results shown.
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数，全部通过 `SEARCH` 控制。
+- No component parameters; everything is controlled through `SEARCH`.
 
 ## SocialIcon.astro
 
-**功能**
+**Features**
 
-- 根据 `icon` 键名渲染社交平台 SVG 图标。
+- Renders a social platform SVG icon based on the `icon` key.
 
-**使用方法**
+**Usage**
 
 ```astro
 <SocialIcon icon="social/github" size={20} />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 常与 `SOCIAL_LINKS[].icon` 搭配使用。
+- Usually paired with `SOCIAL_LINKS[].icon`.
 
-**可选参数**
+**Optional parameters**
 
-- `size?: number`：可选，默认为 `20`。
+- `size?: number`: optional, defaults to `20`.
 
 ## Footer.astro
 
-**功能**
+**Features**
 
-- 渲染页脚版权信息、当前年份与社交链接。
+- Renders the footer copyright notice, the current year and the social links.
 
-**使用方法**
+**Usage**
 
 ```astro
 <Footer />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`COPYRIGHT_NAME`、`SOCIAL_LINKS`
+- Related items: `COPYRIGHT_NAME`, `SOCIAL_LINKS`
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数。
+- No component parameters.
 
 ## PageHeader.astro
 
-**功能**
+**Features**
 
-- 统一渲染页面标题、概述、数量元信息和可选的右侧操作链接。
+- Renders the page title, description, count metadata and an optional right-hand action link in one consistent way.
 
-**使用方法**
+**Usage**
 
 ```astro
-<PageHeader title="文章" description="按时间浏览全部文章。" meta="6 篇" />
+<PageHeader title="Posts" description="Browse all posts by date." meta="6 posts" />
 ```
 
-页面概述通常来自 `PAGE_COPY`，详情页则可以使用动态描述。
+The page description usually comes from `PAGE_COPY`, while detail pages can use a dynamic description.
 
 ## PostList.astro
 
-**功能**
+**Features**
 
-- 统一渲染首页、文章、专题、标签和年份归档中的文章列表。
+- Renders the post lists on the home page, posts, collections, tags and yearly archive in one consistent way.
 
-**使用方法**
+**Usage**
 
 ```astro
 <PostList posts={posts} showDescription={true} showReadingTime={true} />
 ```
 
-可通过 `showDescription` 和 `showReadingTime` 控制摘要与阅读时长是否显示。
+Use `showDescription` and `showReadingTime` to control whether the summary and the reading time are shown.
 
-## ContentSection.astro 与 PageContainer.astro
+## ContentSection.astro and PageContainer.astro
 
-这两个布局组件提供统一的窄版页面容器和区块间距。页面组件应优先组合它们，而不是重复定义宽度、内边距和垂直间距。
+These two layout components provide a consistent narrow page container and section spacing. Page components should compose them first instead of redefining width, padding and vertical spacing.
 
 ## SidebarSection.astro
 
-**功能**
+**Features**
 
-- 侧栏区块容器，与 `ContentSection.astro` 搭配组成双栏布局（如文章页的专题、标签侧栏）。
+- A sidebar section container that pairs with `ContentSection.astro` to form a two-column layout (such as the collection and tag sidebars on the post page).
 
 ## ArchiveLink.astro
 
-**功能**
+**Features**
 
-- 渲染“时间机器 →”归档入口链接，指向年份归档页，用于首页与文章列表页的区块头部。
+- Renders the "Time machine →" archive link that points to the yearly archive page, used in the section headers of the home page and the post list page.
 
 ## CodeCopy.astro
 
-代码块复制按钮由 Markdown/MDX 内容布局统一注入，复制失败时会保留原代码块，不影响阅读。
+The code block copy button is injected uniformly by the Markdown/MDX content layout; when copying fails the original code block is left intact and reading is not affected.
 
 ## FormattedDate.astro
 
-**功能**
+**Features**
 
-- 统一格式化日期展示，输出 `<time>` 元素。
+- Formats date display in one consistent way and outputs a `<time>` element.
 
-**使用方法**
+**Usage**
 
 ```astro
 <FormattedDate date={post.data.pubDate} />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 无直接关联项。
+- No directly related items.
 
-**可选参数**
+**Optional parameters**
 
-- 无，`date` 为必填参数。
+- None; `date` is a required parameter.
 
 ## GitHubContribute.astro
 
-**功能**
+**Features**
 
-- 展示 GitHub 贡献区块标题与贡献日历组件。
+- Shows the GitHub contribution block title and the contribution calendar component.
 
-**使用方法**
+**Usage**
 
 ```astro
 <GitHubContribute />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`GH_CONTRIBUTE`
-- 字段说明：
+- Related item: `GH_CONTRIBUTE`
+- Field descriptions:
   - `title`
   - `description`
   - `username`
   - `profileUrl`
   - `errorMessage`
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数。
+- No component parameters.
 
 ## GitHubCalendar.astro
 
-**功能**
+**Features**
 
-- 使用构建阶段获取的数据渲染静态 SVG 贡献热力图，并自动跟随主题切换。
+- Renders a static SVG contribution heatmap from data fetched at build time, and follows theme switching automatically.
 
-**使用方法**
+**Usage**
 
 ```astro
 <GitHubCalendar contributions={contributions} totalCount={totalCount} />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 该组件由 `GitHubContribute.astro` 在构建阶段获取数据后调用。
+- This component is called by `GitHubContribute.astro` after it fetches the data at build time.
 
-**可选参数**
+**Optional parameters**
 
-- 无可选参数，`contributions` 与 `totalCount` 为必填。
+- No optional parameters; `contributions` and `totalCount` are required.
 
 ## CommentSection.astro
 
-**功能**
+**Features**
 
-- 按 `COMMENTS` 配置动态加载 Giscus 评论区，并在亮暗主题切换时同步评论主题。
+- Dynamically loads the Giscus comment section according to the `COMMENTS` configuration, and syncs the comment theme when the light/dark theme switches.
 
-**使用方法**
+**Usage**
 
 ```astro
 <CommentSection />
 ```
 
-**consts.ts 如何设置**
+**How to set it up in consts.ts**
 
-- 关联项：`COMMENTS`
-- 关键字段：
+- Related item: `COMMENTS`
+- Key fields:
   - `enabled`
   - `provider`
   - `repo`
@@ -330,6 +330,6 @@ tags:
   - `themeDark`
   - `lang`
 
-**可选参数**
+**Optional parameters**
 
-- 无组件参数，全部通过 `COMMENTS` 控制。
+- No component parameters; everything is controlled through `COMMENTS`.

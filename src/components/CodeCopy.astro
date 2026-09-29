@@ -4,8 +4,8 @@
     await navigator.clipboard.writeText(text);
   };
 
-  // ClientRouter 换页后文章 DOM 被替换，需在每次 page-load 重新处理代码块；
-  // 已包装过的 pre 会被 closest 守卫跳过，天然幂等
+  // The article DOM is replaced after ClientRouter navigation, so code blocks are re-processed on every page-load;
+  // pre elements that were already wrapped are skipped by the closest guard, so this is naturally idempotent
   const initCodeCopy = () => {
     document.querySelectorAll<HTMLElement>(".content-prose pre, .exchange-section pre").forEach((pre) => {
       if (pre.closest(".code-block")) return;
@@ -20,21 +20,21 @@
       const button = document.createElement("button");
       button.className = "code-copy-button";
       button.type = "button";
-      button.textContent = "复制";
-      button.setAttribute("aria-label", "复制代码");
+      button.textContent = "Copy";
+      button.setAttribute("aria-label", "Copy code");
       button.setAttribute("aria-live", "polite");
       wrapper.append(button);
 
       button.addEventListener("click", async () => {
         try {
           await copyText(code.textContent ?? "");
-          button.textContent = "已复制";
+          button.textContent = "Copied";
           button.dataset.state = "success";
         } catch {
-          button.textContent = "复制失败";
+          button.textContent = "Copy failed";
           button.dataset.state = "error";
         }
-        window.setTimeout(() => { button.textContent = "复制"; button.dataset.state = ""; }, 1600);
+        window.setTimeout(() => { button.textContent = "Copy"; button.dataset.state = ""; }, 1600);
       });
     });
   };

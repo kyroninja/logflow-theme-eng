@@ -5,17 +5,17 @@ import HeaderLink from "./HeaderLink.astro";
 import SearchDialog from "./SearchDialog.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
-const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname, link.href))?.label ?? "首页";
+const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname, link.href))?.label ?? "Home";
 ---
 <header class="site-header"><div class="header-inner">
   <p class="brand-lockup"><a class="brand" href={withBase("/")}>{SITE_TITLE}</a><span aria-hidden="true">/</span><span class="current-section">{currentSection}</span></p>
-  <nav class="desktop-nav" aria-label="主导航"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href}><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
-  <div class="actions">{SEARCH.enabled && <SearchDialog />}<ThemeToggle /><button id="menu-toggle" class="menu-toggle" type="button" aria-label="展开导航" aria-controls="mobile-nav" aria-expanded="false"><svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
-  <nav id="mobile-nav" class="mobile-nav" aria-label="移动端导航" aria-hidden="true"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href} tabindex="-1"><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
+  <nav class="desktop-nav" aria-label="Main navigation"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href}><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
+  <div class="actions">{SEARCH.enabled && <SearchDialog />}<ThemeToggle /><button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="mobile-nav" aria-expanded="false"><svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation" aria-hidden="true"><ul>{NAV_LINKS.map((link,index) => <li><HeaderLink href={link.href} tabindex="-1"><span class="nav-index" aria-hidden="true">{String(index+1).padStart(2,"0")}</span><span class="nav-label">{link.label}</span></HeaderLink></li>)}</ul></nav>
 </div></header>
 <script>
-  // ClientRouter 换页后 header DOM 被替换，需在每次 page-load 重新绑定；
-  // document 级监听先清理旧实例，避免换页累积
+  // The header DOM is replaced after ClientRouter navigation, so rebind on every page-load;
+  // clean up old document-level listeners first to avoid accumulating them across navigations
   let menuCleanup: (() => void) | null = null;
   document.addEventListener("astro:page-load", () => {
   menuCleanup?.();
@@ -23,7 +23,7 @@ const currentSection = NAV_LINKS.find((link) => isRouteActive(Astro.url.pathname
   const menuStorageKey = "mobile-nav-open"; const mobileViewport = window.matchMedia("(max-width: 760px)");
   const readMenuOpen = () => { try { return sessionStorage.getItem(menuStorageKey) === "true"; } catch { return false; } };
   const writeMenuOpen = (open: boolean) => { try { sessionStorage.setItem(menuStorageKey, String(open)); } catch {} };
-  const setMenuOpen = (open: boolean, persist = true) => { menuToggle?.setAttribute("aria-expanded", String(open)); menuToggle?.setAttribute("aria-label", open ? "收起导航" : "展开导航"); mobileNav?.classList.toggle("is-open", open); mobileNav?.setAttribute("aria-hidden", String(!open)); mobileNav?.querySelectorAll("a").forEach((link) => { link.tabIndex = open ? 0 : -1; }); if (persist) writeMenuOpen(open); };
+  const setMenuOpen = (open: boolean, persist = true) => { menuToggle?.setAttribute("aria-expanded", String(open)); menuToggle?.setAttribute("aria-label", open ? "Close navigation" : "Open navigation"); mobileNav?.classList.toggle("is-open", open); mobileNav?.setAttribute("aria-hidden", String(!open)); mobileNav?.querySelectorAll("a").forEach((link) => { link.tabIndex = open ? 0 : -1; }); if (persist) writeMenuOpen(open); };
   const syncMenuToViewport = () => setMenuOpen(mobileViewport.matches && readMenuOpen(), false);
   menuToggle?.addEventListener("click", () => setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true"));
   const onKeydown = (event: KeyboardEvent) => { if (event.key === "Escape") setMenuOpen(false); };

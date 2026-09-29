@@ -1,16 +1,16 @@
 ---
-title: MDX 渲染样式示例
-description: 展示 LogFlow Theme 在标题、段落、列表、代码块、表格与 JSX 内容下的渲染效果。
+title: MDX Rendering Style Showcase
+description: Shows how LogFlow Theme renders headings, paragraphs, lists, code blocks, tables and JSX content.
 pubDate: 2026-03-14
 collection: LogFlow Theme
-collectionDescription: LogFlow Theme 主题设计、实现与迭代实践
+collectionDescription: Design, implementation and iteration notes for the LogFlow Theme
 tags:
   - MDX
   - Markdown
   - Styles
 ---
 
-正文中文使用霞鹜文楷 Screen，英文、数字与常用符号也由同一字体协调呈现；代码块保持独立的等宽字体栈。
+Body text uses LXGW WenKai Screen, with English text, numbers and common symbols rendered in harmony by the same font; code blocks keep their own independent monospace font stack.
 
 export const InfoBadge = ({ text }) => (
 	<span
@@ -27,35 +27,35 @@ export const InfoBadge = ({ text }) => (
 	</span>
 );
 
-# 一级标题示例
+# Heading 1 Example
 
-这是一个普通段落，包含行内代码 `const answer = 42;`，以及一个 MDX JSX 徽标：<InfoBadge text="MDX + JSX" />。
+This is a regular paragraph containing inline code `const answer = 42;` and an MDX JSX badge: <InfoBadge text="MDX + JSX" />.
 
-## 二级标题示例
+## Heading 2 Example
 
-下面是列表样式：
+Here are the list styles:
 
-- 无序列表第一项
-- 无序列表第二项
-- 无序列表第三项
+- First item of the unordered list
+- Second item of the unordered list
+- Third item of the unordered list
 
-1. 有序列表第一项
-2. 有序列表第二项
-3. 有序列表第三项
+1. First item of the ordered list
+2. Second item of the ordered list
+3. Third item of the ordered list
 
-### 引用与强调
+### Quotes and Emphasis
 
-> 这是引用块示例，可用于提示、注意事项或总结段落。
+> This is a blockquote example, useful for tips, notes or summary paragraphs.
 
-你也可以组合 **加粗文本**、*斜体文本* 和 [链接](https://astro.build/)。
+You can also combine **bold text**, *italic text* and [links](https://astro.build/).
 
-### 代码块示例
+### Code Block Examples
 
 ```ts
 export const PAGE_COPY = {
 	blog: {
-		title: '文章',
-		description: '按时间浏览全部文章。',
+		title: 'Posts',
+		description: 'Browse all posts by date.',
 	},
 };
 ```
@@ -67,20 +67,20 @@ export const PAGE_COPY = {
 </section>
 ```
 
-### 表格示例
+### Table Example
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 | --- | --- | --- |
-| title | string | 文章标题 |
-| description | string | 文章摘要 |
-| pubDate | date | 发布时间 |
+| title | string | Post title |
+| description | string | Post summary |
+| pubDate | date | Publish date |
 
-### HTML 块示例
+### HTML Block Example
 
 <div style="padding: 0.85rem 1rem; border: 1px solid rgba(125, 125, 125, 0.3); border-radius: var(--radius-ui);">
-  这是原生 HTML 块，可用于自定义展示区域。
+  This is a native HTML block, useful for custom display areas.
 </div>
 
 ---
 
-以上内容可用于快速检查主题对 Markdown 与 MDX 的主要排版支持情况。
+The content above can be used to quickly check the theme's main typographic support for Markdown and MDX.

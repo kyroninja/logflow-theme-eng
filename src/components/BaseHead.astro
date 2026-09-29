@@ -47,9 +47,9 @@ const { title, description, image, type = 'website' } = Astro.props;
 		document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
 	};
 	applyTheme();
-	// ClientRouter 换页会替换 <html> 属性（dark 类会丢失），换页完成后重新应用。
-	// 注意：不要监听 class 变化回写 localStorage——换页瞬间 dark 被移除会污染存储，
-	// 主题持久化只发生在 ThemeToggle 的用户点击里。
+	// ClientRouter navigation replaces <html> attributes (the dark class is lost), so re-apply after each swap.
+	// Note: do not write to localStorage on class changes — the dark class is briefly removed during navigation, which would corrupt the stored value.
+	// Theme persistence only happens on user clicks in ThemeToggle.
 	document.addEventListener('astro:after-swap', applyTheme);
 </script>
 

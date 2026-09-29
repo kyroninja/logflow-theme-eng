@@ -25,11 +25,11 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 			data-theme-light={themeLight}
 			data-theme-dark={themeDark}
 		>
-			<h2>评论</h2>
+			<h2>Comments</h2>
 			{
 				isConfigured ? (
 					<script is:inline data-astro-rerun>
-						// data-astro-rerun：ClientRouter 换页后重新执行，为当前文章重新挂载 giscus
+						// data-astro-rerun: re-executes after ClientRouter navigation to remount giscus for the current post
 						const commentsContainer = document.querySelector('.comments[data-giscus="true"]');
 						if (commentsContainer) {
 							const repo = commentsContainer.getAttribute('data-repo') || '';
@@ -37,7 +37,7 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 							const category = commentsContainer.getAttribute('data-category') || '';
 							const categoryId = commentsContainer.getAttribute('data-category-id') || '';
 							const mapping = commentsContainer.getAttribute('data-mapping') || 'pathname';
-							const lang = commentsContainer.getAttribute('data-lang') || 'zh-CN';
+							const lang = commentsContainer.getAttribute('data-lang') || 'en';
 							const lightTheme = commentsContainer?.getAttribute('data-theme-light') || 'light';
 							const darkTheme = commentsContainer?.getAttribute('data-theme-dark') || 'dark';
 
@@ -84,7 +84,7 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 								}
 							}, 300);
 
-							// data-astro-rerun 每次换页重跑本脚本，先断开上一个 observer 避免累积
+							// data-astro-rerun re-runs this script on every navigation, so disconnect the previous observer first to avoid accumulating them
 							if (window.__giscusThemeObserver) window.__giscusThemeObserver.disconnect();
 							const observer = new MutationObserver(() => {
 								setGiscusTheme();
@@ -95,7 +95,7 @@ const themeDark = COMMENTS.themeDark ?? 'dark';
 					</script>
 				) : (
 					<p class="comments-hint">
-						评论系统尚未配置，请检查 src/consts.ts 中的 COMMENTS 设置。
+						The comment system is not configured yet. Please check the COMMENTS settings in src/consts.ts.
 					</p>
 				)
 			}

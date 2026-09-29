@@ -1,42 +1,37 @@
 # LogFlow Theme
 
-[简体中文](README.md) | [English](README.en.md)
-
-一个简洁、内容优先的 Astro 博客主题，适合中文写作、个人主页和技术文档。
-
-> A compact, content-first Astro theme for blogs and personal sites.
+A compact, content-first Astro blog theme for writing, personal sites, and technical documentation.
 
 <table>
   <tr>
-    <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="主题总览 · 深色首页" width="100%" /></td>
+    <td colspan="2" align="center"><img src="public/screenshots/overview.png" alt="Theme Overview · Dark Home" width="100%" /></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="public/screenshots/pixel-hero.gif" alt="像素流体动画 · 深色" width="100%" /></td>
+    <td colspan="2" align="center"><img src="public/screenshots/pixel-hero.gif" alt="Pixel Fluid Animation · Dark" width="100%" /></td>
   </tr>
   <tr>
-    <td align="center"><img src="public/screenshots/article-dark.png" alt="文章页 · 深色" width="100%" /></td>
-    <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub 活跃度 · 深色" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/article-dark.png" alt="Article · Dark" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/gh-wall-dark.png" alt="GitHub Activity · Dark" width="100%" /></td>
   </tr>
   <tr>
-    <td align="center"><img src="public/screenshots/friends-dark.png" alt="友链页 · 深色" width="100%" /></td>
-    <td align="center"><img src="public/screenshots/home-light.png" alt="首页 · 浅色" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/friends-dark.png" alt="Friends · Dark" width="100%" /></td>
+    <td align="center"><img src="public/screenshots/home-light.png" alt="Home · Light" width="100%" /></td>
   </tr>
 </table>
 
-## 功能
+## Features
 
-- Markdown/MDX、代码高亮、一键复制和可选文章头图
-- 专题、标签、年份归档、友链和 About 页面
-- 零依赖静态文章搜索，支持标题、摘要和标签
-- 全站像素流体动画背景：零依赖 WebGL 实现，跟随明暗主题配色，支持 reduced-motion 与 WebGL 不可用降级
-- ClientRouter 无缝换页与链接预加载，动画跨页持续播放
-- 明暗主题、响应式移动端导航和键盘焦点样式
-- RSS、sitemap、canonical、Open Graph 和 Twitter Card
-- 可选 Giscus 评论与 GitHub 活跃度组件
-- GitHub Pages 自动构建部署
+- Markdown / MDX, syntax highlighting, one-click code copy, and optional hero images
+- Collections, tags, year archives, friend links, and About page
+- Dependency-free static post search across titles, descriptions, and tags
+- Site-wide pixel fluid animation background: zero-dependency WebGL, follows the light/dark palette, with reduced-motion and no-WebGL fallbacks
+- ClientRouter seamless page transitions with link prefetch; the animation persists across pages
+- Light / dark theme, responsive mobile nav, and keyboard focus styles
+- RSS, sitemap, canonical, Open Graph, and Twitter Card
+- Optional Giscus comments and GitHub contribution graph
+- GitHub Pages auto-deploy via Actions
 
-
-## 快速开始
+## Quick Start
 
 ```bash
 git clone https://github.com/kevynf/logflow-theme.git
@@ -45,7 +40,7 @@ npm install
 npm run dev
 ```
 
-开发地址默认为 `http://localhost:4321`。要求 Node.js `>=22.12.0`。
+The dev server runs at `http://localhost:4321` by default. Requires Node.js `>=22.12.0`.
 
 ```bash
 npx astro check
@@ -53,50 +48,50 @@ npm run build
 npm run preview
 ```
 
-## 首次配置
+## First-Time Setup
 
-大多数站点信息集中在 `src/consts.ts`：
+Most site information lives in `src/consts.ts`:
 
-| 配置 | 用途 | 必填 |
+| Config | Purpose | Required |
 | --- | --- | --- |
-| `SITE_TITLE` | 站点标题、Header、RSS | 是 |
-| `SITE_DESCRIPTION` | 默认 SEO 描述 | 是 |
-| `SITE_URL` | 生产站点地址 | 部署时是 |
-| `COPYRIGHT_NAME` | 页脚版权名称 | 否 |
-| `PAGE_COPY` | 各页面标题和描述 | 否 |
-| `NAV_LINKS` | 桌面端和移动端导航 | 否 |
-| `SOCIAL_LINKS` | 页脚社交链接 | 否 |
-| `HOME` | 首页头像、简介、格言和文章数量 | 否 |
-| `GH_CONTRIBUTE` | GitHub 活跃度区块 | 否 |
-| `COMMENTS` | Giscus 评论系统 | 否 |
-| `SEARCH` | 搜索开关和最大结果数 | 否 |
+| `SITE_TITLE` | Site title, header, RSS | Yes |
+| `SITE_DESCRIPTION` | Default SEO description | Yes |
+| `SITE_URL` | Production site URL | Yes (for deploy) |
+| `COPYRIGHT_NAME` | Footer copyright name | No |
+| `PAGE_COPY` | Page titles and descriptions | No |
+| `NAV_LINKS` | Desktop & mobile nav links | No |
+| `SOCIAL_LINKS` | Footer social icon links | No |
+| `HOME` | Avatar, bio, motto, recent posts limit | No |
+| `GH_CONTRIBUTE` | GitHub contribution graph | No |
+| `COMMENTS` | Giscus comment system | No |
+| `SEARCH` | Search toggle and maximum result count | No |
 
-友链位于 `src/config/friend-links.ts`，按 `FriendLink` 接口添加即可；未填写 `avatar` 时显示站点名称首字。
+Friend links live in `src/config/friend-links.ts`. Add entries following the `FriendLink` interface; when `avatar` is omitted, the first letter of the site name is shown instead.
 
-颜色、字体、间距、宽度和圆角等设计令牌位于 `src/styles/global.css` 顶部的 CSS 变量中。
+Design tokens (colors, fonts, spacing, widths, radii) are at the top of `src/styles/global.css` as CSS custom properties.
 
-## 写作
+## Writing
 
-文章放在 `src/content/blog/`，支持 `.md` 和 `.mdx`。最小 Frontmatter：
+Posts go in `src/content/blog/` and support both `.md` and `.mdx`. Minimal frontmatter:
 
 ```yaml
 ---
-title: 我的第一篇文章
-description: 一句话摘要
+title: My First Post
+description: A one-line summary
 pubDate: 2026-07-16
 ---
 ```
 
-完整字段：
+Full frontmatter:
 
 ```yaml
 ---
-title: Frontmatter 使用实践
-description: 文章摘要
+title: Frontmatter Best Practices
+description: Post summary
 pubDate: 2026-07-16
 updatedDate: 2026-07-17
 collection: Astro
-collectionDescription: Astro 主题开发记录
+collectionDescription: Astro theme development notes
 tags:
   - Astro
   - Theme
@@ -104,37 +99,37 @@ heroImage: ./cover.png
 ---
 ```
 
-`title`、`description` 和 `pubDate` 必填，其余字段可选。无 `heroImage` 时不会出现破损图片或空的社交图片元信息。
+`title`, `description`, and `pubDate` are required; all other fields are optional. No `heroImage` means no broken image or empty social image metadata.
 
-## 搜索
+## Search
 
-搜索索引在构建时生成，仅包含 `src/content/blog/` 中文章的标题、摘要和标签，不会收录正文。索引会在首次打开搜索时由浏览器加载，不依赖服务端或第三方搜索服务。
+The search index is generated at build time from post titles, descriptions, and tags in `src/content/blog/` only; post bodies are not included. The browser loads the index the first time search is opened, with no server or third-party search service required.
 
-点击 Header 中的搜索图标，或按 `Ctrl/Command + K`、`/` 打开搜索；使用 `↑`、`↓` 选择结果，按 `Enter` 打开。通过 `src/consts.ts` 中的 `SEARCH.enabled` 控制入口，通过 `SEARCH.maxResults` 设置最多显示的结果数。
+Open search from the Header icon or with `Ctrl/Command + K` or `/`. Use `↑` and `↓` to select a result and `Enter` to open it. Set `SEARCH.enabled` in `src/consts.ts` to show or hide search, and use `SEARCH.maxResults` to limit the number of displayed results.
 
-## Giscus
+## Giscus Comments
 
-在 GitHub 仓库启用 Discussions 后，修改 `src/consts.ts` 中的 `COMMENTS` 并填写 `repoId`、`categoryId`。评论默认关闭；字段不完整时页面会显示配置提示。
+After enabling Discussions on your GitHub repository, edit `COMMENTS` in `src/consts.ts` and fill in `repoId` and `categoryId`. Comments are off by default; a configuration hint is shown when fields are incomplete.
 
-## 图片与头像
+## Images & Avatar
 
-- 头像：省略 `avatar` 即使用 `public/favicon.svg`。
-- 文章图片：可放在文章目录并通过 `heroImage` 引用，但不是必需项。
-- favicon：替换 `public/favicon.svg` 即可更新默认头像和站点图标。
+- **Avatar:** Omit `avatar` to use `public/favicon.svg` as the default.
+- **Post images:** Store images alongside posts and reference them via `heroImage` (optional).
+- **Favicon:** Replace `public/favicon.svg` to update both the default avatar and site icon.
 
 ## GitHub Pages
 
-将仓库 Pages Source 设置为 **GitHub Actions**，推送到 `main` 后自动部署。工作流会设置 `SITE_URL=https://<owner>.github.io` 与 `BASE_PATH=/<repository-name>`。
+Set the repository's Pages Source to **GitHub Actions**. Pushing to `main` triggers an automatic deploy. The workflow sets `SITE_URL=https://<owner>.github.io` and `BASE_PATH=/<repository-name>`.
 
-## 自定义边界
+## Customization Boundaries
 
-- 站点文案与行为：`src/consts.ts`
-- 友链：`src/config/friend-links.ts`
-- 文章与 About：`src/content/`
-- 颜色、字体、间距和布局密度：`src/styles/global.css`
-- 页面结构：`src/pages/`、`src/layouts/`、`src/components/`
+- Site copy & behavior: `src/consts.ts`
+- Friend links: `src/config/friend-links.ts`
+- Posts & About: `src/content/`
+- Colors, fonts, spacing, layout density: `src/styles/global.css`
+- Page structure: `src/pages/`, `src/layouts/`, `src/components/`
 
-优先通过配置和内容完成定制，只有需要改变结构时才修改组件或布局。
+Prefer configuration and content for customizations; only modify components or layouts when the structure truly needs to change.
 
 ## License
 

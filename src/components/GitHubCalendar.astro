@@ -11,6 +11,8 @@ const sortedContributions = [...contributions].sort((a, b) =>
   a.date.localeCompare(b.date),
 );
 
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const blockSize = 12;
 const blockRadius = 2;
 const blockGap = 2;
@@ -52,15 +54,15 @@ for (const contribution of sortedContributions) {
 
   const month = date.getUTCMonth();
   if (month !== previousMonth) {
-    monthLabels.push({ label: `${month + 1}月`, x });
+    monthLabels.push({ label: MONTH_NAMES[month], x });
     previousMonth = month;
   }
 }
 
 const weekdayLabels = [
-  { label: "一", row: 1 },
-  { label: "三", row: 3 },
-  { label: "五", row: 5 },
+  { label: "Mon", row: 1 },
+  { label: "Wed", row: 3 },
+  { label: "Fri", row: 5 },
 ];
 ---
 
@@ -74,8 +76,8 @@ const weekdayLabels = [
       role="img"
       aria-labelledby="gh-calendar-title gh-calendar-description"
     >
-      <title id="gh-calendar-title">GitHub 贡献日历</title>
-      <desc id="gh-calendar-description">过去一年共 {totalCount} 次贡献</desc>
+      <title id="gh-calendar-title">GitHub contribution calendar</title>
+      <desc id="gh-calendar-description">{totalCount} contributions in the past year</desc>
       {
         monthLabels.map(({ label, x }) => (
           <text class="calendar-label month-label" x={x} y="10">
@@ -101,13 +103,13 @@ const weekdayLabels = [
       }
     </svg>
     <figcaption>
-      <span>过去一年共 {totalCount} 次贡献</span>
-      <span class="calendar-legend" aria-label="贡献强度：少到多">
-        <span>少</span>
+      <span>{totalCount} contributions in the past year</span>
+      <span class="calendar-legend" aria-label="Contribution intensity: less to more">
+        <span>Less</span>
         {[0, 1, 2, 3, 4].map((level) => (
           <i class={`calendar-level-${level}`} aria-hidden="true" />
         ))}
-        <span>多</span>
+        <span>More</span>
       </span>
     </figcaption>
   </figure>

@@ -1,22 +1,22 @@
 ---
-title: consts.ts 配置参考
-description: 按站点、页面、导航、首页、搜索、友链与评论分组说明全局配置。
+title: consts.ts Configuration Reference
+description: Explains the global configuration grouped by site, pages, navigation, home page, search, friend links and comments.
 pubDate: 2026-03-14
 collection: LogFlow Theme
-collectionDescription: LogFlow Theme 主题设计、实现与迭代实践
+collectionDescription: Design, implementation and iteration notes for the LogFlow Theme
 tags:
   - Astro
   - Config
   - Template
 ---
 
-全站可复用配置集中在 `src/consts.ts`。页面内容、文章 frontmatter 和纯视觉样式不放在这里：文章内容由 `src/content/` 管理，颜色、字号与间距由 `src/styles/global.css` 管理。
+The site-wide reusable configuration lives in `src/consts.ts`. Page content, post frontmatter and purely visual styles do not belong here: post content is managed in `src/content/`, and colors, font sizes and spacing are managed in `src/styles/global.css`.
 
-## 站点基础信息
+## Basic Site Information
 
 ### SITE_TITLE
 
-站点名称，用于 Header、首页标题、浏览器标题和 RSS。
+The site name, used in the Header, the home page title, the browser title and RSS.
 
 ```ts
 export const SITE_TITLE = "LogFlow Theme";
@@ -24,7 +24,7 @@ export const SITE_TITLE = "LogFlow Theme";
 
 ### SITE_DESCRIPTION
 
-站点级默认描述，用于首页和 RSS。各静态页面的独立概述由 `PAGE_COPY` 管理。
+The site-level default description, used for the home page and RSS. The individual descriptions of the static pages are managed by `PAGE_COPY`.
 
 ```ts
 export const SITE_DESCRIPTION = "A compact Astro theme for writing and publishing.";
@@ -32,7 +32,7 @@ export const SITE_DESCRIPTION = "A compact Astro theme for writing and publishin
 
 ### SITE_URL
 
-生产环境的完整站点地址，用于 Astro 的 `site` 配置、canonical URL、sitemap、RSS 和友链交换信息。不要添加末尾斜杠。
+The full production site URL, used for Astro's `site` setting, canonical URLs, the sitemap, RSS and the friend link exchange info. Do not add a trailing slash.
 
 ```ts
 export const SITE_URL = "https://example.com";
@@ -40,71 +40,71 @@ export const SITE_URL = "https://example.com";
 
 ### COPYRIGHT_NAME
 
-页脚版权名称，可以填写个人名、组织名或品牌名。
+The footer copyright name; it can be a personal name, an organization name or a brand name.
 
 ```ts
 export const COPYRIGHT_NAME = "Your Name";
 ```
 
-## 页面标题与概述
+## Page Titles and Descriptions
 
-`PAGE_COPY` 统一维护静态页面的标题和概述。每项文案同时提供给页面标题区域与 SEO description，避免在页面组件内重复填写。
+`PAGE_COPY` maintains the titles and descriptions of the static pages in one place. Each entry is provided both to the page header area and to the SEO description, so you do not have to fill it in again inside the page components.
 
 ```ts
 export const PAGE_COPY = {
   blog: {
-    title: "文章",
-    description: "按时间浏览全部文章。",
+    title: "Posts",
+    description: "Browse all posts by date.",
     descriptionItalic: false,
   },
   collections: {
-    title: "专题",
-    description: "按系列阅读相关文章。",
+    title: "Collections",
+    description: "Read related posts as a series.",
     descriptionItalic: false,
   },
   tags: {
-    title: "标签",
-    description: "按主题浏览全部文章。",
+    title: "Tags",
+    description: "Browse all posts by topic.",
     descriptionItalic: false,
   },
   years: {
-    title: "文章归档",
-    description: "按发布时间浏览全部文章。",
+    title: "Archive",
+    description: "Browse all posts by publish date.",
     descriptionItalic: false,
   },
   friends: {
-    title: "友链",
-    description: "收藏一些值得长期拜访的个人站点。",
+    title: "Friends",
+    description: "A few personal sites worth visiting again and again.",
     descriptionItalic: false,
   },
   about: {
-    title: "关于",
-    description: "关于作者、本站和内容授权。",
+    title: "About",
+    description: "About the author, this site and content licensing.",
     descriptionItalic: false,
   },
 } as const;
 ```
 
-标签详情页的概述会根据标签名动态生成；专题详情页优先读取文章 frontmatter 中的 `collectionDescription`，缺失时回退到专题页概述。
+The description of a tag detail page is generated dynamically from the tag name; a collection detail page prefers the `collectionDescription` from the post frontmatter and falls back to the collections page description when it is missing.
 
-每个页面的 `descriptionItalic` 都控制对应页面概述是否使用斜体，默认建议设为 `false`。
+The `descriptionItalic` setting of each page controls whether that page's description is italic; `false` is recommended by default.
 
-## Header 导航
+## Header Navigation
 
-`NAV_LINKS` 控制 Header 的桌面端和移动端导航。`href` 使用站内绝对路径，构建时会自动处理 Astro 的 `base` 路径。
+`NAV_LINKS` controls the desktop and mobile navigation in the Header. `href` uses an absolute in-site path, and Astro's `base` path is handled automatically at build time.
 
 ```ts
 export const NAV_LINKS = [
-  { href: "/", label: "首页" },
-  { href: "/blog", label: "文章" },
-  { href: "/friends", label: "友链" },
-  { href: "/about", label: "关于" },
+  { href: "/", label: "Home" },
+  { href: "/blog", label: "Posts" },
+  { href: "/friends", label: "Friends" },
+  { href: "/about", label: "About" },
 ] as const;
 ```
 
-## 页脚社交链接
+## Footer Social Links
 
-`SOCIAL_LINKS` 控制页脚图标链接。
+`SOCIAL_LINKS` controls the icon links in the footer.
 
 ```ts
 export const SOCIAL_LINKS = [
@@ -116,15 +116,15 @@ export const SOCIAL_LINKS = [
 ] as const;
 ```
 
-字段含义：
+Field meanings:
 
-- `label`：无障碍名称。
-- `href`：外部主页地址。
-- `icon`：`SocialIcon.astro` 内置图标键名，当前支持 `social/github`、`social/twitter` 和 `social/bilibili`。
+- `label`: the accessible name.
+- `href`: the external profile URL.
+- `icon`: a built-in icon key of `SocialIcon.astro`; `social/github`, `social/twitter` and `social/bilibili` are currently supported.
 
-## 首页
+## Home Page
 
-`HOME` 只管理首页个人信息和内容数量，不管理字号或布局。
+`HOME` only manages the home page profile info and the post count, not font sizes or layout.
 
 ```ts
 export const HOME = {
@@ -133,39 +133,39 @@ export const HOME = {
     alt: "LogFlow Theme avatar",
   },
   motto: "Build in public.",
-  description: "一个窄版、紧凑的 Astro 博客主题。",
+  description: "A narrow, compact Astro blog theme.",
   recentPostsLimit: 6,
 } as const;
 ```
 
-- `avatar.src`：头像地址。
-- `avatar.alt`：头像替代文本。
-- `motto`：首页显示的个人格言，同时用于生成本站友链信息中的 `Desc`。
-- `description`：首页直接展示的个人简介，不从 About 正文自动提取。
-- `recentPostsLimit`：首页最近文章数量。
+- `avatar.src`: the avatar URL.
+- `avatar.alt`: the avatar alt text.
+- `motto`: the personal motto shown on the home page, also used to generate the `Desc` in this site's friend link info.
+- `description`: the personal bio shown directly on the home page; it is not extracted automatically from the About body.
+- `recentPostsLimit`: the number of recent posts on the home page.
 
-## GitHub 活跃度
+## GitHub Activity
 
-`GH_CONTRIBUTE` 控制首页 GitHub 贡献区块。
+`GH_CONTRIBUTE` controls the GitHub contribution block on the home page.
 
 ```ts
 export const GH_CONTRIBUTE = {
-  title: "GitHub 活跃度",
-  description: "最近一年的开源贡献记录",
+  title: "GitHub Activity",
+  description: "Open-source contributions over the past year",
   username: "withastro",
   profileUrl: "https://github.com/withastro",
-  errorMessage: "GitHub 贡献图暂时不可用。",
+  errorMessage: "The GitHub contribution graph is temporarily unavailable.",
 } as const;
 ```
 
-- `title`、`description`：区块标题和说明。
-- `username`：贡献图对应的 GitHub 用户名。
-- `profileUrl`：点击区块后前往的 GitHub 主页。
-- `errorMessage`：贡献图加载失败时显示的提示。
+- `title`, `description`: the block title and description.
+- `username`: the GitHub username the contribution graph belongs to.
+- `profileUrl`: the GitHub profile opened when the block is clicked.
+- `errorMessage`: the message shown when the contribution graph fails to load.
 
-## 友链
+## Friend Links
 
-`FRIEND_LINKS` 从 `src/config/friend-links.ts` 导出，友链较多时无需继续增大主配置文件。
+`FRIEND_LINKS` is exported from `src/config/friend-links.ts`, so the main configuration file does not need to grow when you have many friend links.
 
 ```ts
 export const FRIEND_LINKS = [
@@ -173,19 +173,19 @@ export const FRIEND_LINKS = [
     name: "Example Blog",
     link: "https://example.com",
     avatar: "https://example.com/avatar.png",
-    desc: "一句话介绍这个站点。",
+    desc: "A one-line introduction to this site.",
   },
 ];
 ```
 
-- `name`：站点名称，必填。
-- `link`：站点地址；旧数据中的 `url` 仍兼容。
-- `avatar`：头像地址，可选；缺失时显示站点名称首字。
-- `desc`：一句话简介；旧数据中的 `description` 仍兼容。
+- `name`: the site name, required.
+- `link`: the site URL; `url` in older data is still supported.
+- `avatar`: the avatar URL, optional; when missing, the first letter of the site name is shown.
+- `desc`: a one-line description; `description` in older data is still supported.
 
-## 搜索
+## Search
 
-`SEARCH` 控制静态文章搜索的入口与结果数量。
+`SEARCH` controls the entry point and the result count of the static post search.
 
 ```ts
 export const SEARCH = {
@@ -194,12 +194,12 @@ export const SEARCH = {
 } as const;
 ```
 
-- `enabled`：设为 `false` 后 Header 不渲染搜索入口。
-- `maxResults`：搜索结果最多展示条数。
+- `enabled`: when set to `false`, the Header does not render the search entry.
+- `maxResults`: the maximum number of search results shown.
 
-## 评论
+## Comments
 
-`COMMENTS` 管理 giscus 的开关、仓库、Discussion 分类、映射方式、主题与语言。
+`COMMENTS` manages the giscus toggle, repository, Discussion category, mapping, themes and language.
 
 ```ts
 export const COMMENTS = {
@@ -212,24 +212,24 @@ export const COMMENTS = {
   mapping: "pathname",
   themeLight: "light_protanopia",
   themeDark: "transparent_dark",
-  lang: "zh-CN",
+  lang: "en",
 } as const;
 ```
 
-- `enabled`：评论总开关。
-- `provider`：当前保持为 `giscus`。
-- `repo`、`repoId`：已启用 Discussions 的公开仓库及其 ID。
-- `category`、`categoryId`：用于评论的 Discussion 分类及其 ID。
-- `mapping`：页面与讨论串的映射方式，常用值为 `pathname`、`title`、`url` 或 `og:title`。
-- `themeLight`、`themeDark`：跟随站点明暗模式切换的 giscus 主题。
-- `lang`：giscus 界面语言。
+- `enabled`: the global comments switch.
+- `provider`: keep it as `giscus` for now.
+- `repo`, `repoId`: the public repository with Discussions enabled, and its ID.
+- `category`, `categoryId`: the Discussion category used for comments, and its ID.
+- `mapping`: how pages map to discussion threads; common values are `pathname`, `title`, `url` or `og:title`.
+- `themeLight`, `themeDark`: the giscus themes that follow the site's light/dark mode.
+- `lang`: the giscus interface language.
 
-仓库和分类 ID 可通过 [giscus 配置页](https://giscus.app/zh-CN) 获取。
+You can get the repository and category IDs from the [giscus configuration page](https://giscus.app/).
 
-## 推荐修改顺序
+## Recommended Order of Changes
 
-1. 修改 `SITE_TITLE`、`SITE_DESCRIPTION`、`SITE_URL` 和 `COPYRIGHT_NAME`。
-2. 修改 `PAGE_COPY`、`NAV_LINKS` 和 `HOME`，确定站点文案。
-3. 修改 `SOCIAL_LINKS`、`GH_CONTRIBUTE` 与 `FRIEND_LINKS`。
-4. 在仓库启用 Discussions 后配置 `COMMENTS`。
-5. 运行 `npx astro check` 和 `npm run build` 验证配置。
+1. Change `SITE_TITLE`, `SITE_DESCRIPTION`, `SITE_URL` and `COPYRIGHT_NAME`.
+2. Change `PAGE_COPY`, `NAV_LINKS` and `HOME` to settle the site copy.
+3. Change `SOCIAL_LINKS`, `GH_CONTRIBUTE` and `FRIEND_LINKS`.
+4. Configure `COMMENTS` after enabling Discussions on the repository.
+5. Run `npx astro check` and `npm run build` to verify the configuration.

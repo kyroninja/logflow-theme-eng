@@ -9,7 +9,7 @@ const indexUrl = withBase("/search-index.json");
   <button
     class="search-trigger"
     type="button"
-    aria-label="搜索文章"
+    aria-label="Search posts"
     aria-haspopup="dialog"
     aria-controls="search-dialog"
     aria-keyshortcuts="Control+K Meta+K /"
@@ -21,12 +21,12 @@ const indexUrl = withBase("/search-index.json");
     <div class="search-panel">
       <header class="search-head">
         <svg class="search-input-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-        <label id="search-title" class="sr-only" for="site-search-input">搜索文章</label>
+        <label id="search-title" class="sr-only" for="site-search-input">Search posts</label>
         <input
           id="site-search-input"
           class="search-input"
           type="search"
-          placeholder="搜索标题、描述或标签"
+          placeholder="Search titles, descriptions or tags"
           autocomplete="off"
           spellcheck="false"
           role="combobox"
@@ -34,18 +34,18 @@ const indexUrl = withBase("/search-index.json");
           aria-autocomplete="list"
           aria-expanded="false"
         />
-        <button class="search-close" type="button" aria-label="关闭搜索">
+        <button class="search-close" type="button" aria-label="Close search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg>
         </button>
       </header>
       <div class="search-body">
-        <p class="search-status" role="status" aria-live="polite">输入关键词搜索文章</p>
+        <p class="search-status" role="status" aria-live="polite">Type a keyword to search posts</p>
         <ol id="search-results" class="search-results" role="listbox" hidden></ol>
       </div>
       <footer class="search-help" aria-hidden="true">
-        <p><kbd>↑</kbd><kbd>↓</kbd> 选择</p>
-        <p><kbd>Enter</kbd> 打开</p>
-        <p><kbd>Esc</kbd> 关闭</p>
+        <p><kbd>↑</kbd><kbd>↓</kbd> Select</p>
+        <p><kbd>Enter</kbd> Open</p>
+        <p><kbd>Esc</kbd> Close</p>
       </footer>
     </div>
   </dialog>
@@ -80,8 +80,8 @@ const indexUrl = withBase("/search-index.json");
     }
   };
 
-  // 搜索索引缓存保留在模块级，跨页复用；
-  // DOM 监听随换页重建，document 级监听通过 AbortController 清理旧实例
+  // The search index cache lives at module level and is reused across pages;
+  // DOM listeners are rebuilt on navigation; document-level listeners are cleaned up via AbortController
   let items: PreparedSearchIndexItem[] | null = null;
   let loadPromise: Promise<PreparedSearchIndexItem[]> | null = null;
   let searchAbort: AbortController | null = null;
@@ -154,7 +154,7 @@ const indexUrl = withBase("/search-index.json");
       if (terms.length === 0) {
         results.hidden = true;
         status.hidden = false;
-        status.textContent = "输入关键词搜索文章";
+        status.textContent = "Type a keyword to search posts";
         input.removeAttribute("aria-activedescendant");
         animateDialogResize(previousHeight);
         return;
@@ -169,7 +169,7 @@ const indexUrl = withBase("/search-index.json");
       if (matches.length === 0) {
         results.hidden = true;
         status.hidden = false;
-        status.textContent = `没有找到与“${query.trim()}”相关的文章`;
+        status.textContent = `No posts found for “${query.trim()}”`;
         animateDialogResize(previousHeight);
         return;
       }
@@ -201,7 +201,7 @@ const indexUrl = withBase("/search-index.json");
       if (!dialog.open) dialog.showModal();
       input.setAttribute("aria-expanded", "true");
       status.hidden = false;
-      status.textContent = items ? "输入关键词搜索文章" : "正在加载搜索索引…";
+      status.textContent = items ? "Type a keyword to search posts" : "Loading search index…";
       requestAnimationFrame(() => input.focus());
       loadIndex(indexUrl)
         .then(() => renderResults(input.value))
@@ -209,7 +209,7 @@ const indexUrl = withBase("/search-index.json");
           loadPromise = null;
           status.hidden = false;
           results.hidden = true;
-          status.textContent = "搜索索引加载失败，请稍后重试";
+          status.textContent = "Failed to load the search index. Please try again later.";
         });
     };
 

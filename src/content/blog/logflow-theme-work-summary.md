@@ -1,9 +1,9 @@
 ---
-title: LogFlow Theme：我为什么要造轮子
-description: 记录我制作 LogFlow Theme 这个博客主题时的一些想法和取舍。
+title: "LogFlow Theme: Why I Reinvented the Wheel"
+description: Some thoughts and trade-offs from building the LogFlow Theme blog theme.
 pubDate: 2026-03-14
 collection: LogFlow Theme
-collectionDescription: LogFlow Theme 主题设计、实现与迭代实践
+collectionDescription: Design, implementation and iteration notes for the LogFlow Theme
 tags:
   - Astro
   - Theme
@@ -11,64 +11,64 @@ tags:
   - Open Source
 ---
 
-本博客用的主题，直接修改自Astro官方的Blog最小模板，添加了一些自定义组件和页面，包括但不限于：
+The theme behind this blog is modified directly from Astro's official minimal Blog template, with some custom components and pages added, including but not limited to:
 
-- 首页的个人信息、紧凑文章列表和 GitHub 活跃度。
-- 构建阶段获取数据并静态渲染的 GitHub 贡献图。
-- 全站像素流体动画背景（零依赖 WebGL），明暗主题跟随。
-- ClientRouter 无缝换页与链接预加载。
-- 零依赖的静态文章搜索。
-- 可以自定义的社交链接、友链列表。
-- 专题、标签和年份归档页面。
-- giscus 评论支持。
+- A home page with personal info, a compact post list and GitHub activity.
+- A GitHub contribution graph fetched at build time and rendered statically.
+- A site-wide pixel fluid animation background (zero-dependency WebGL) that follows the light/dark theme.
+- ClientRouter seamless page transitions with link prefetching.
+- Dependency-free static post search.
+- Customizable social links and a friend link list.
+- Collection, tag and yearly archive pages.
+- giscus comment support.
 
-主题本身在 GitHub [LogFlow Theme](https://github.com/kevynf/logflow-theme) 仓库开源。
+The theme itself is open source in the GitHub [LogFlow Theme](https://github.com/kevynf/logflow-theme) repository.
 
 
-我想要的是一个安装好之后可以快速开始写作、配置集中且易于维护的主题，于是就有了 LogFlow Theme。
+What I wanted was a theme that lets you start writing quickly after installing it, with centralized configuration that is easy to maintain, and that is how LogFlow Theme came about.
 
-## 我是怎么设计它的
+## How I Designed It
 
-### 配置集中
+### Centralized Configuration
 
-我希望修改站点信息这件事尽量简单，所以把常用配置都集成到了 `src/consts.ts` 里，包括：
+I wanted changing site information to be as simple as possible, so all the commonly used settings are gathered in `src/consts.ts`, including:
 
-- 站点标题、描述、URL 和版权名字；
-- 页面标题与概述（`PAGE_COPY`）；
-- 首页头像、标语和文章数量（`HOME`）；
-- 社交链接与 GitHub 贡献图配置；
-- 友链数据（由 `src/config/friend-links.ts` 维护）；
-- giscus 评论相关配置（`COMMENTS`）。
+- Site title, description, URL and copyright name;
+- Page titles and descriptions (`PAGE_COPY`);
+- Home page avatar, motto and post count (`HOME`);
+- Social links and GitHub contribution graph settings;
+- Friend link data (maintained in `src/config/friend-links.ts`);
+- giscus comment settings (`COMMENTS`).
 
-日常只需修改 `src/consts.ts`，大部分个性化需求都能得到覆盖，不需要频繁在组件内部进行修改。
+In day-to-day use you only need to edit `src/consts.ts`, which covers most personalization needs without frequently touching the components.
 
-### 文章
+### Posts
 
-使用了尽量简单的 Frontmatter 字段，包括：
+It uses Frontmatter fields that are as simple as possible, including:
 
-- `title`、`description`、`pubDate` 为必填
-- `updatedDate`、`collection`、`collectionDescription`、`tags`、`heroImage`、`enableComments` 为可选
+- `title`, `description` and `pubDate` are required
+- `updatedDate`, `collection`, `collectionDescription`, `tags`, `heroImage` and `enableComments` are optional
 
-好处显而易见，一方面可以专注于写作，另一方面如若久别重逢，也可快速上手。
+The benefits are obvious: you can focus on writing, and if you come back after a long absence you can pick it up again quickly.
 
-### 一些细节
+### A Few Details
 
-没有刻意堆砌。
+Nothing is piled on for its own sake.
 
-- 颜色模式切换；
-- 一个紧凑的中文 Header；
-- 更具可读性的配色和页面布局；
-- 可选的 giscus 评论。
+- Color mode switching;
+- A compact Header;
+- More readable colors and page layout;
+- Optional giscus comments.
 
-并不复杂，但对于体验的提升是很显著的。
+None of it is complicated, but the improvement to the experience is significant.
 
-## 如果你也想用
+## If You Want to Use It Too
 
-请移步 [LogFlow Theme](https://github.com/kevynf/logflow-theme) 仓库，可以选择 Use this template 一键配置。内置的示例文章同时也是本主题的简单使用说明。
+Head over to the [LogFlow Theme](https://github.com/kevynf/logflow-theme) repository, where you can choose Use this template to set it up in one click. The built-in sample posts also double as a simple guide to using the theme.
 
-> 总之对我来说，这个主题更多是按照之前使用Hexo、VuePress等架构的经验，整理成一个可以重复使用的模版。
+> All in all, for me this theme is mostly a reusable template distilled from my earlier experience with architectures like Hexo and VuePress.
 >
-> 同时也以此勉励自己长久坚持，专注写作。
+> It is also a way to encourage myself to keep going for the long haul and stay focused on writing.
 >
-> 如果你希望为本项目贡献代码，也欢迎提交 PR。
+> If you would like to contribute code to this project, pull requests are welcome.
 
